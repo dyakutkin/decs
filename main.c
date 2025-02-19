@@ -1,32 +1,53 @@
+#include "assert.h"
 #include "stdint.h"
 
-#include "vec.h"
+#include <raylib.h>
 
-#include "entity.h"
 #include "components.h"
-#include "store.h"
+#include "entity.h"
+#include "genarena.h"
 
 bool arch_person_fn(Entity *entity) {
-  return Component__is_set((void*)&entity->PersonComponent);
+  return BaseComponent__is_set((void *)&entity->PersonComponent);
 }
 
 int main(void) {
-  int elem1 = 1;
-  int elem2 = 3;
+  GenArena arena = GenArena__alloc(sizeof(Entity), 1000000);
 
-  ArrayList list = ArrayList__new(sizeof(int), 1);
-  ArrayList__append(&list, &elem1);
-  ArrayList__append(&list, &elem2);
-    
-  ArrayList__free(&list);
-
-  Entity entity = {.PersonComponent = {._base.is_set = true, .name = "player"}};
-  EntityStore store = EntityStore__new();
-
-  Arch arch_person = {.matcher = &arch_person_fn};
-  if (!EntityStore__register_arch(&store, &arch_person)) {
-    return 1;
+  GenArenaIdx idx = {};
+  Entity e = {
+      component(PersonComponent, .name = "John"),
+      component(PositionComponent, .x = 0, .y = 0),
   };
+  assert(GenArena__insert(&arena, &e, &idx));
+
+  GenArenaIdx idx1 = {};
+  Entity e1 = {
+      component(PersonComponent, .name = "Jack"),
+      component(PositionComponent, .x = 1, .y = 1),
+  };
+  assert(GenArena__insert(&arena, &e1, &idx1));
+
+  GenArenaIdx idx2 = {};
+  Entity e2 = {
+      component(PersonComponent, .name = "Tom"),
+      component(PositionComponent, .x = 2, .y = 2),
+  };
+  assert(GenArena__insert(&arena, &e2, &idx2));
+
+  assert(GenArena__remove(&arena, idx1));
+
+  GenArenaIdx idx3 = {};
+  Entity e3 = {
+      component(PersonComponent, .name = "Newby"),
+      component(PositionComponent, .x = 3, .y = 3),
+  };
+  assert(GenArena__insert(&arena, &e3, &idx3));
+  
+  Entity *got1 = GenArena__get(&arena, idx1);
+  Entity *got3 = GenArena__get(&arena, idx3);
+
+  GenArena__free(&arena);
 
   return 0;
 }

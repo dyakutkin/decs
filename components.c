@@ -1,6 +1,6 @@
 #include "components.h"
 
-bool Component__is_set(void *c) {
-  Component *component = (Component*)c;
+bool BaseComponent__is_set(void *c) {
+  BaseComponent *component = (BaseComponent*)c;
   return component->is_set;
 }

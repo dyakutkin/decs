@@ -5,7 +5,7 @@
 
 typedef struct {
   size_t elem_size;
-  void **elements;
+  void *elements;
   size_t len;
   size_t capacity;
 } ArrayList;

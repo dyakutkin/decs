@@ -8,7 +8,7 @@ build:
 	gcc ./*.c -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -Wall -Wextra  -o ./build/pr
 
 build-debug:
-	gcc ./*.c -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -Wall -Wextra -g  -o ./build/pr
+	gcc ./*.c -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -Wall -Wextra -g  -o ./build/pr.debug
 
 run:
 	./build/pr
