@@ -3,51 +3,48 @@
 
 #include <raylib.h>
 
+#include "genarena.h"
+
+#include "board.h"
 #include "components.h"
 #include "entity.h"
-#include "genarena.h"
+
+#include "./setup/actors.h"
+
+#define MAX_ENTITIES_AMOUNT 1000000
 
 bool arch_person_fn(Entity *entity) {
   return BaseComponent__is_set((void *)&entity->PersonComponent);
 }
 
 int main(void) {
-  GenArena arena = GenArena__alloc(sizeof(Entity), 1000000);
+  GenArena arena = GenArena__alloc(sizeof(Entity), MAX_ENTITIES_AMOUNT);
+  Board board = Board__alloc();
 
-  GenArenaIdx idx = {};
-  Entity e = {
-      component(PersonComponent, .name = "John"),
-      component(PositionComponent, .x = 0, .y = 0),
-  };
-  assert(GenArena__insert(&arena, &e, &idx));
+  setup_actors(&board, &arena);
 
-  GenArenaIdx idx1 = {};
-  Entity e1 = {
-      component(PersonComponent, .name = "Jack"),
-      component(PositionComponent, .x = 1, .y = 1),
-  };
-  assert(GenArena__insert(&arena, &e1, &idx1));
-
-  GenArenaIdx idx2 = {};
-  Entity e2 = {
-      component(PersonComponent, .name = "Tom"),
-      component(PositionComponent, .x = 2, .y = 2),
-  };
-  assert(GenArena__insert(&arena, &e2, &idx2));
-
-  assert(GenArena__remove(&arena, idx1));
-
-  GenArenaIdx idx3 = {};
-  Entity e3 = {
-      component(PersonComponent, .name = "Newby"),
-      component(PositionComponent, .x = 3, .y = 3),
-  };
-  assert(GenArena__insert(&arena, &e3, &idx3));
-  
-  Entity *got1 = GenArena__get(&arena, idx1);
-  Entity *got3 = GenArena__get(&arena, idx3);
-
+  Board__free(&board);
   GenArena__free(&arena);
+
+  const int screenWidth = 1920;
+  const int screenHeight = 1080;
+
+  InitWindow(screenWidth, screenHeight, "Past Recalling");
+
+  SetTargetFPS(60);
+
+  while (!WindowShouldClose()) {
+    BeginDrawing();
+
+    ClearBackground(RAYWHITE);
+
+    DrawText("Congrats! You created your first window!", 190, 200, 20,
+             LIGHTGRAY);
+
+    EndDrawing();
+  }
+
+  CloseWindow();
 
   return 0;
 }
