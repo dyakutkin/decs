@@ -1,6 +1,9 @@
 #pragma once
 
-#include "../board.h"
-#include "../genarena.h"
+#include "../collections/genarena.h"
 
-void setup_actors(Board *board, GenArena *e_arena);
+#include "../board.h"
+#include "../entity.h"
+#include "../components.h"
+
+EntityID setup_actors(Board *board, GenArena *e_arena);

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <stdlib.h>
-#include "stdbool.h"
+#include <stdbool.h>
 
-#include "entity.h"
+#include "entity_id.h"
 #include "point.h"
 
 #define BOARD_SIDE_TILES_AMOUNT 5000

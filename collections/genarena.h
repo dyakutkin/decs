@@ -1,7 +1,7 @@
 #pragma once
 
-#include "stdbool.h"
-#include "stdlib.h"
+#include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef struct {
@@ -19,7 +19,7 @@ typedef struct {
   size_t elem_amount;
 
   GenArenaValueDesc *descs;
-  char *data;
+  void *data;
 
   size_t current_idx;
 

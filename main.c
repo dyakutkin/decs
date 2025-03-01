@@ -1,50 +1,32 @@
-#include "assert.h"
+#include <assert.h>
 #include <stdint.h>
 
 #include <raylib.h>
 
-#include "genarena.h"
+#include "collections/alist.h"
+#include "collections/genarena.h"
 
 #include "board.h"
-#include "components.h"
 #include "entity.h"
+#include "entity_id.h"
+#include "events.h"
 
-#include "./setup/actors.h"
+#include "setup/actors.h"
+
+#include "systems/input.h"
+#include "systems/movement.h"
 
 #define MAX_ENTITIES_AMOUNT 1000000
 
-typedef struct {
-} EventOne;
-
-typedef struct {
-} EventTwo;
-
-#define TYPE EventOne
-#include "events/event_bus.h"
-#undef TYPE
-
-#define TYPE EventTwo
-#include "events/event_bus.h"
-#undef TYPE
-
-bool arch_person_fn(Entity *entity) {
-  return BaseComponent__is_set((void *)&entity->PersonComponent);
-}
-
 int main(void) {
-  AList_EventOne f = AList_EventOne__alloc(5);
-  AList_EventOne__free(&f);
-
-  AList_EventTwo f1 = AList_EventTwo__alloc(5);
-  AList_EventTwo__free(&f1);
-
-  GenArena arena = GenArena__alloc(sizeof(Entity), MAX_ENTITIES_AMOUNT);
+  GenArena entities = GenArena__alloc(sizeof(Entity), MAX_ENTITIES_AMOUNT);
   Board board = Board__alloc();
+  AList move_events = AList__alloc(5, sizeof(MoveEvent));
 
-  setup_actors(&board, &arena);
+  EntityID player_id = setup_actors(&board, &entities);
 
-  Board__free(&board);
-  GenArena__free(&arena);
+  Image image_player = LoadImage("assets/chars.png");
+  Texture2D texture = LoadTextureFromImage(image_player);
 
   const int screenWidth = 1920;
   const int screenHeight = 1080;
@@ -54,17 +36,23 @@ int main(void) {
   SetTargetFPS(60);
 
   while (!WindowShouldClose()) {
+    bool got_input = input_system(&move_events, player_id);
+
+    if (got_input) {
+      movement_system(&board, &entities, move_events);
+    }
+
     BeginDrawing();
-
     ClearBackground(RAYWHITE);
-
-    DrawText("Congrats! You created your first window!", 190, 200, 20,
-             LIGHTGRAY);
-
+    DrawText("foobar", 190, 200, 20, LIGHTGRAY);
     EndDrawing();
   }
 
   CloseWindow();
+
+  AList__free(&move_events);
+  Board__free(&board);
+  GenArena__free(&entities);
 
   return 0;
 }

@@ -6,7 +6,7 @@ GenArena GenArena__alloc(size_t value_size, size_t elem_amount) {
       .elem_size = elem_size,
       .elem_amount = elem_amount,
       .descs = calloc(elem_amount, sizeof(GenArenaValueDesc)),
-      .data = (char *)malloc(elem_amount * elem_size),
+      .data = malloc(elem_amount * elem_size),
       .current_idx = 0,
       .freed_idxs = malloc(sizeof(size_t) * elem_amount),
       .freed_idxs_amount = 0,
@@ -34,7 +34,7 @@ bool GenArena__insert(GenArena *self, void *value, GenArenaIdx *idx) {
     self->freed_idxs_amount--;
   }
 
-  char *current_elem_data_ptr = self->data + self->elem_size * idx_raw;
+  void *current_elem_data_ptr = self->data + self->elem_size * idx_raw;
   GenArenaValueDesc *current_elem_desc_ptr = self->descs + idx_raw;
 
   memcpy(current_elem_data_ptr, value, self->elem_size);
@@ -62,7 +62,7 @@ void *GenArena__get(GenArena *self, GenArenaIdx idx) {
     return NULL;
   }
 
-  char *current_elem_data_ptr = self->data + self->elem_size * idx.idx_raw;
+  void *current_elem_data_ptr = self->data + self->elem_size * idx.idx_raw;
   return current_elem_data_ptr;
 }
 
