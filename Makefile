@@ -6,6 +6,9 @@ buildw:
 build:
 	gcc $(FILES) -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o ./build/pr.exe
 
+build-debug:
+	gcc $(FILES) -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -g -o ./build/pr.debug
+
 # build-debug:
 # 	gcc $(FILES) -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -Wall -Wextra -g  -o ./build/pr.debug
 

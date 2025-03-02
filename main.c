@@ -6,17 +6,17 @@
 #include "collections/alist.h"
 #include "collections/genarena.h"
 
+#include "globals/entity.h"
 #include "board.h"
 #include "entity.h"
 #include "entity_id.h"
 #include "events.h"
+#include "asset_manager/textures.h"
 
 #include "setup/actors.h"
 
 #include "systems/input.h"
 #include "systems/movement.h"
-
-#define MAX_ENTITIES_AMOUNT 1000000
 
 int main(void) {
   GenArena entities = GenArena__alloc(sizeof(Entity), MAX_ENTITIES_AMOUNT);
@@ -25,13 +25,12 @@ int main(void) {
 
   EntityID player_id = setup_actors(&board, &entities);
 
-  Image image_player = LoadImage("assets/chars.png");
-  Texture2D texture = LoadTextureFromImage(image_player);
-
   const int screenWidth = 1920;
   const int screenHeight = 1080;
 
   InitWindow(screenWidth, screenHeight, "Past Recalling");
+
+  Textures textures = Textures__load();
 
   SetTargetFPS(60);
 
@@ -44,11 +43,17 @@ int main(void) {
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
+    // DrawTextureRec(texture_chars,
+    //                (Rectangle){.x = 0, .y = 0, .width = 128, .height = 128},
+    //                (Vector2){.x = 0, .y = 0}, LIGHTGRAY);
+
     DrawText("foobar", 190, 200, 20, LIGHTGRAY);
     EndDrawing();
   }
 
   CloseWindow();
+
+  Textures__unload(&textures);
 
   AList__free(&move_events);
   Board__free(&board);
