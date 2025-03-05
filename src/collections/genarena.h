@@ -4,27 +4,30 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
-  size_t idx_raw;
-  unsigned int rev;
+typedef struct
+{
+    size_t idx_raw;
+    unsigned int rev;
 } GenArenaIdx;
 
-typedef struct {
-  unsigned int rev;
-  bool taken;
+typedef struct
+{
+    unsigned int rev;
+    bool taken;
 } GenArenaValueDesc;
 
-typedef struct {
-  size_t elem_size;
-  size_t elem_amount;
+typedef struct
+{
+    size_t elem_size;
+    size_t elem_amount;
 
-  GenArenaValueDesc *descs;
-  void *data;
+    GenArenaValueDesc *descs;
+    void *data;
 
-  size_t current_idx;
+    size_t current_idx;
 
-  size_t *freed_idxs;
-  size_t freed_idxs_amount;
+    size_t *freed_idxs;
+    size_t freed_idxs_amount;
 } GenArena;
 
 GenArena GenArena__alloc(size_t value_size, size_t elem_amount);

@@ -1,8 +1,12 @@
+#pragma once
+
 #include <raylib.h>
 
-typedef struct {
-  Texture2D chars;
-  Texture2D terrain;
+typedef struct
+{
+    Texture2D error;
+    Texture2D chars;
+    Texture2D terrain;
 } Textures;
 
 Textures Textures__load();

@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
+typedef struct
+{
   void *events;
   size_t elem_size;
   size_t len;

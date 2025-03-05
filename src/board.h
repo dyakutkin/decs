@@ -2,20 +2,23 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "entity_id.h"
 #include "point.h"
 
 #define BOARD_SIDE_TILES_AMOUNT 5000
 
-typedef struct {
-  bool occupied;
-  EntityID occupied_by;
+typedef struct
+{
+    bool occupied;
+    EntityID occupied_by;
 } BoardTile;
 
-typedef struct {
-  size_t tiles_amount;
-  BoardTile *tiles;
+typedef struct
+{
+    size_t tiles_amount;
+    BoardTile *tiles;
 } Board;
 
 Board Board__alloc();

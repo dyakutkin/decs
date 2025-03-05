@@ -2,9 +2,10 @@
 
 #include "stdlib.h"
 
-typedef struct {
-  size_t x;
-  size_t y;
+typedef struct
+{
+    int x;
+    int y;
 } Point;
 
 typedef Point VecDelta;
