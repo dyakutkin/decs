@@ -5,11 +5,11 @@
 
 #include "movement.h"
 
-void movement_system(Board *board, GenArena *entities, AList events)
+void movement_system(Board *board, GenArena *entities, MoveEvents events)
 {
-    for (int i = 0; i < events.len; i++)
+    for (int i = 0; i < events.base.len; i++)
     {
-        MoveEvent event = ((MoveEvent *)events.events)[i];
+        MoveEvent event = events.elements[i];
         Entity *e = GenArena__get(entities, event.entity_id);
         if (e == NULL)
         {
@@ -32,7 +32,7 @@ void movement_system(Board *board, GenArena *entities, AList events)
         bool collided = !Board__attempt_occupy(board, &new_attempted_point, event.entity_id);
         if (collided)
         {
-            printf("%zu collided while attempting to move.\n", event.entity_id.idx_raw);
+            // printf("%zu collided while attempting to move.\n", event.entity_id.idx_raw);
             continue;
         }
 

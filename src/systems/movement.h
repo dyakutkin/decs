@@ -5,4 +5,4 @@
 #include "../board.h"
 #include "../events.h"
 
-void movement_system(Board *board, GenArena *entities, AList events);
+void movement_system(Board *board, GenArena *entities, MoveEvents events);

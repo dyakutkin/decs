@@ -16,6 +16,8 @@ void render_system(Camera2D *camera, Textures *textures, Board *board, GenArena 
 
     float texture_size_px = map_tile_size();
 
+    camera->target = (Vector2){left_upper.x * texture_size_px, left_upper.y * texture_size_px};
+
     BeginMode2D(*camera);
 
     int top_x = left_upper.x + PLAYER_RENDER_SQUARE_SIDE;

@@ -1,10 +1,6 @@
-#include <raylib.h>
-
-#include "../events.h"
-
 #include "input.h"
 
-bool input_system(AList *events, EntityID player_id)
+bool input_system(MoveEvents *events, EntityID player_id)
 {
     int x = 0, y = 0;
     bool got_input = false;
@@ -35,10 +31,11 @@ bool input_system(AList *events, EntityID player_id)
 
     if (got_input)
     {
-        AList__append(events, &(MoveEvent){
-                                  .delta = (VecDelta){.x = x, .y = y},
-                                  .entity_id = player_id,
-                              });
+        MoveEvent event = {
+            .delta = (VecDelta){.x = x, .y = y},
+            .entity_id = player_id,
+        };
+        ALIST_APPEND(events, &event);
     }
 
     return got_input;

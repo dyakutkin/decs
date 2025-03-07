@@ -10,6 +10,15 @@
     },
     "makefile.configureOnOpen": false,
     "files.associations": {
-        "components.h": "c"
+        "components.h": "c",
+        "compare": "cpp",
+        "memory": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "xmemory": "cpp",
+        "xtr1common": "cpp",
+        "xutility": "cpp",
+        "render.h": "c"
     }
 }

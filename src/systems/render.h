@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <raylib.h>
 
-#include "../globals/game.h"
+#include "../globals/visuals.h"
 
 #include "../collections/genarena.h"
 

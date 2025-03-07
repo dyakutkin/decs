@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdint.h>
+#include <time.h>
 
 #include <raylib.h>
 
@@ -9,7 +10,7 @@
 #include "collections/genarena.h"
 
 #include "globals/entity.h"
-#include "globals/game.h"
+#include "globals/visuals.h"
 
 #include "board.h"
 #include "entity.h"
@@ -27,7 +28,7 @@ int main(void)
 {
     GenArena entities = GenArena__alloc(sizeof(Entity), MAX_ENTITIES_AMOUNT);
     Board board = Board__alloc();
-    AList move_events = AList__alloc(5, sizeof(MoveEvent));
+    MoveEvents move_events = ALIST_ALLOC(MoveEvent, 5);
 
     EntityID player_id = setup_actors(&board, &entities);
 
@@ -46,35 +47,45 @@ int main(void)
     // TODO: handle it somewhere else.
     float texture_size_px = map_tile_size();
     Camera2D camera = {0};
-    camera.offset = (Vector2){SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 
-    while (!WindowShouldClose())
+    clock_t start, end;
+    double cpu_time_used;
+
+    bool got_input = false;
+
+    do
     {
         bool got_input = input_system(&move_events, player_id);
 
         if (got_input)
         {
+            start = clock();
+
             movement_system(&board, &entities, move_events);
-            camera.target = (Vector2){player_e->PositionComponent.x * texture_size_px, player_e->PositionComponent.y * texture_size_px};
-            AList__clear(&move_events);
+
+            ALIST_CLEAR((&move_events));
+
+            end = clock();
+            cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+            printf("game logic took: %f\n", cpu_time_used);
         }
 
         BeginDrawing();
-
         ClearBackground(RAYWHITE);
+
         render_system(&camera, &textures, &board, &entities, player_id);
 
         // DrawText("foobar", 190, 200, 20, LIGHTGRAY);
         EndDrawing();
-    }
+    } while (!WindowShouldClose());
 
     CloseWindow();
 
     Textures__unload(&textures);
 
-    AList__free(&move_events);
+    ALIST_FREE((&move_events));
     Board__free(&board);
     GenArena__free(&entities);
 

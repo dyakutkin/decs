@@ -8,4 +8,8 @@ typedef struct
     int y;
 } Point;
 
-typedef Point VecDelta;
+typedef struct
+{
+    int x;
+    int y;
+} VecDelta;
