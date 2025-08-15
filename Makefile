@@ -1,18 +1,13 @@
-FILES = $(shell find . -name "*.c")
-
-buildw:
-	gcc $(FILES) -lraylib -lgdi32 -lwinmm -o ./build/pr.exe
+.PHONY: build
 
 build:
-	gcc $(FILES) -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o ./build/pr.exe
+	gcc -g3 -O0 -o ./build/pr $(shell find ./src -name '*.c') ./src/lib/linux/libraylib.a -lGL -lm -lpthread -ldl -lrt -lX11
 
-build-debug:
-	gcc $(FILES) -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -g -o ./build/pr.debug
+win-build:
+	x86_64-w64-mingw32-g++ -g -o ./build/pr.exe $(shell find ./src -name '*.c') ./src/lib/win/libraylib.a -lm -lwinmm -lgdi32
 
-# build-debug:
-# 	gcc $(FILES) -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -Wall -Wextra -g  -o ./build/pr.debug
+run:
+	make build && ./build/pr
 
-# run:
-# 	./build/pr
-
-.PHONY: build
+check-leaks:
+	make build && valgrind --leak-check=full ./build/pr
