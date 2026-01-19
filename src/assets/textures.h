@@ -1,12 +1,13 @@
 #pragma once
 
-#include "../include/raylib.h"
+#include "../include/raylib/raylib.h"
 
-struct Textures {
-  Texture2D error;
-  Texture2D chars;
-  Texture2D terrain;
-};
+typedef struct
+{
+    Texture2D error;
+    Texture2D chars;
+    Texture2D terrain;
+} Textures;
 
-struct Textures load_textures();
-void unload_textures(struct Textures *textures);
+Textures textures_load();
+void textures_unload(Textures *textures);

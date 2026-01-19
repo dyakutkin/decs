@@ -1,43 +1,51 @@
-#include "assets/textures.h"
-#include "board/board.h"
-#include "entity/entity.h"
-#include "include/raylib.h"
-#include "setup/setup.h"
-#include "systems/systems.h"
 #include <assert.h>
-#include <stdio.h>
 
-int main(void) {
-  struct Entities *entities = alloc_entities();
-  struct Board *board = alloc_board();
+#include "include/raylib/raylib.h"
 
-  struct EntityID player_id = setup_actors(entities, board);
+#include "actions.h"
+#include "board.h"
+#include "entity.h"
+#include "option.h"
+#include "world.h"
 
-  InitWindow(1280, 800, "Past Recalling");
+#include "setup.h"
 
-  struct Textures textures = load_textures();
+#include "assets/textures.h"
 
-  Camera2D camera = {0};
-  camera.rotation = 0.0f;
-  camera.zoom = 1.0f;
+#include "systems/example.h"
+#include "systems/render.h"
 
-  do {
-    if (input_system(entities, player_id)) {
-      movement_system(board, entities);
-      clear_picked_action_system(entities);
-    }
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-    render_system(&camera, &textures, board, entities, player_id);
-    EndDrawing();
-  } while (!WindowShouldClose());
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
+#define SCREEN_TITLE "The Game"
 
-  unload_textures(&textures);
+int main(void)
+{
+    World *w = world_alloc();
+    Board *b = board_alloc();
 
-  CloseWindow();
+    Entity player = setup_actors(w, b);
 
-  free(board);
-  free(entities);
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
 
-  return 0;
+    Textures textures = textures_load();
+
+    example_system(w);
+    Camera2D camera = {0};
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
+
+    do
+    {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        render_system(&camera, &textures, b, w, player);
+        EndDrawing();
+    } while (!WindowShouldClose());
+
+    textures_unload(&textures);
+
+    CloseWindow();
+
+    return 0;
 }

@@ -1,28 +1,28 @@
 #pragma once
 
-#include "../assets/textures.h"
-#include "../board/board.h"
-#include "../entity/entity.h"
-#include "../include/raylib.h"
 #include <stdlib.h>
 
-enum TileType {
-  UNKNOWN,
-  GRASS,
-  WALL,
-  PLAYER,
-  NPC,
-};
+#include "../assets/textures.h"
+#include "../board.h"
+#include "../entity.h"
+#include "../flags.h"
+#include "../include/raylib/raylib.h"
+#include "../world.h"
 
-struct TextureDesc {
-  size_t x;
-  size_t y;
-  Texture2D *texture;
-};
+typedef enum
+{
+    UNKNOWN,
+    GRASS,
+    WALL,
+    PLAYER,
+    NPC,
+} TileType;
 
-static float map_tile_size();
-static void draw_tile(struct Textures *textures,
-                      struct TextureDesc texture_desc,
-                      struct Vector board_position, float texture_size_px);
-static struct TextureDesc resolve_texture_desc(struct Textures *textures,
-                                               enum TileType tile_type);
+typedef struct
+{
+    size_t x;
+    size_t y;
+    Texture2D *texture;
+} TextureDesc;
+void render_system(Camera2D *camera, Textures *textures, Board *b, World *w,
+                   Entity player);
