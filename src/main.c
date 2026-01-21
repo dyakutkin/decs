@@ -22,9 +22,8 @@
 int main(void)
 {
     struct action a1 = (struct action){
-        .tag = ACTION_TAG_DIRECTION,
-        .value.direction.action = DIRECTION_ACTION_MOVE,
-        .value.direction.value = DIRECTION_EAST,
+        .kind = ACTION_MOVE,
+        .payload.direction = DIRECTION_EAST,
     };
     struct world *w = world();
     struct board *b = board();

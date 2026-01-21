@@ -7,7 +7,7 @@ struct world *world(void)
     return w;
 }
 
-bool new_entity(struct world *w, struct entity *e)
+bool create_entity(struct world *w, struct entity *e)
 {
     size_t idx;
     if (w->free_idxs_amount > 0)

@@ -9,57 +9,36 @@ struct percepted_actor
     // PerceptedTags tags;
 };
 
-struct event_content
+enum event_kind
 {
-    enum
-    {
-        SUBJECT,
-        OBJECT,
-        DIRECTION,
-        STATUS
-    } tag;
-    union
-    {
-        struct
-        {
-            enum
-            {
-                SUBJECT_EVENT_EXISTS,
-                SUBJECT_EVENT_DIES
-            } event;
-        } subject;
-        struct
-        {
-            enum
-            {
-                OBJECT_EVENT_OWNS,
-                OBJECT_EVENT_COLLECTS,
-                OBJECT_EVENT_DROPS,
-                OBJECT_EVENT_EATS,
-            } event;
-            struct percepted_actor object;
-        } object;
-        struct
-        {
-            enum
-            {
-                DIRECTION_EVENT_WALKS,
-                DIRECTION_EVENT_BUMPS
-            } event;
-            enum direction direction;
-        } direction;
-        struct
-        {
-            enum
-            {
-                STATUS_EVENT_HUNGER,
-            } event;
-        } status;
-    } value;
+    // "subject" events (no payload).
+    EVENT_EXISTS = 100,
+    EVENT_DIES,
+
+    // "object" events.
+    EVENT_OWNS = 200,
+    EVENT_COLLECTS,
+    EVENT_DROPS,
+    EVENT_EATS,
+
+    // "directional" events.
+    EVENT_WALKS = 300,
+    EVENT_BUMPS,
+};
+
+enum event_status
+{
+    EVENT_STATUS_HUNGER,
 };
 
 struct event
 {
     struct percepted_actor subject;
-    struct event_content content;
+    enum event_kind kind;
+    union
+    {
+        struct percepted_actor object;
+        enum direction direction;
+        enum event_status status;
+    } payload;
 };

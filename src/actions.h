@@ -1,38 +1,24 @@
 #include "direction.h"
 #include "entity.h"
 
+enum action_kind
+{
+    // "subject" actions (no payload).
+    ACTION_DIE = 100,
+
+    // "object" actions.
+    ACTION_EAT = 200,
+
+    // "directional" actions.
+    ACTION_MOVE = 300,
+};
+
 struct action
 {
-    enum
-    {
-        ACTION_TAG_SUBJECT,
-        ACTION_TAG_OBJECT,
-        ACTION_TAG_DIRECTION,
-    } tag;
+    enum action_kind kind;
     union
     {
-        struct
-        {
-            enum
-            {
-                SUBJECT_ACTION_DIE,
-            } action;
-        } subject;
-        struct
-        {
-            enum
-            {
-                OBJECT_ACTION_EAT,
-            } action;
-            struct entity value;
-        } object;
-        struct
-        {
-            enum
-            {
-                DIRECTION_ACTION_MOVE,
-            } action;
-            enum direction value;
-        } direction;
-    } value;
+        struct entity object;
+        enum direction direction;
+    } payload;
 };

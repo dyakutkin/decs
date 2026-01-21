@@ -21,7 +21,7 @@ typedef struct
 {
     OPT(struct entity) occupier;
     ALIST(struct entity) ground;
-    ALIST(struct entity) events;
+    ALIST(struct event) events;
 } BoardTile;
 
 struct board

@@ -29,6 +29,6 @@ struct world
 };
 
 struct world *world(void);
-bool new_entity(struct world *w, struct entity *entity);
+bool create_entity(struct world *w, struct entity *entity);
 bool remove_entity(struct world *w, struct entity entity);
 bool valid_entity(struct world *w, struct entity entity);
