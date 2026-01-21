@@ -2,4 +2,4 @@
 #include "entity.h"
 #include "world.h"
 
-Entity setup_actors(World *w, Board *b);
+struct entity setup_actors(struct world *w, struct board *b);

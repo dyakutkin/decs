@@ -1,7 +1,7 @@
 #include "direction.h"
 #include "entity.h"
 
-typedef struct
+struct action
 {
     enum
     {
@@ -24,7 +24,7 @@ typedef struct
             {
                 OBJECT_ACTION_EAT,
             } action;
-            Entity value;
+            struct entity value;
         } object;
         struct
         {
@@ -32,7 +32,7 @@ typedef struct
             {
                 DIRECTION_ACTION_MOVE,
             } action;
-            Direction value;
+            enum direction value;
         } direction;
     } value;
-} Action;
+};

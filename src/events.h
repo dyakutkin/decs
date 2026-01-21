@@ -3,13 +3,13 @@
 #include "direction.h"
 #include "entity.h"
 
-typedef struct
+struct percepted_actor
 {
-    Entity entity;
+    struct entity entity;
     // PerceptedTags tags;
-} PerceptedActor;
+};
 
-typedef struct
+struct event_content
 {
     enum
     {
@@ -37,7 +37,7 @@ typedef struct
                 OBJECT_EVENT_DROPS,
                 OBJECT_EVENT_EATS,
             } event;
-            PerceptedActor object;
+            struct percepted_actor object;
         } object;
         struct
         {
@@ -46,7 +46,7 @@ typedef struct
                 DIRECTION_EVENT_WALKS,
                 DIRECTION_EVENT_BUMPS
             } event;
-            Direction direction;
+            enum direction direction;
         } direction;
         struct
         {
@@ -56,10 +56,10 @@ typedef struct
             } event;
         } status;
     } value;
-} EventContent;
+};
 
-typedef struct
+struct event
 {
-    PerceptedActor subject;
-    EventContent content;
-} Event;
+    struct percepted_actor subject;
+    struct event_content content;
+};

@@ -1,67 +1,66 @@
 #include "world.h"
 #include "entity.h"
 
-World *world_alloc(void)
+struct world *world(void)
 {
-    World *world = calloc(1, sizeof(World));
-    return world;
+    struct world *w = calloc(1, sizeof(struct world));
+    return w;
 }
 
-bool new_entity(World *world, Entity *entity)
+bool new_entity(struct world *w, struct entity *e)
 {
     size_t idx;
-    if (world->free_idxs_amount > 0)
+    if (w->free_idxs_amount > 0)
     {
-        idx = world->free_idxs[world->free_idxs_amount - 1];
-        world->free_idxs_amount--;
+        idx = w->free_idxs[w->free_idxs_amount - 1];
+        w->free_idxs_amount--;
     }
-    else if (world->len == MAX_ENTITIES)
+    else if (w->len == MAX_ENTITIES)
     {
         return false;
     }
     else
     {
-        idx = world->len;
-        world->len++;
+        idx = w->len;
+        w->len++;
     }
 
-    world->revision[idx]++;
-    world->initialized[idx] = true;
+    w->revision[idx]++;
+    w->initialized[idx] = true;
 
-    entity->idx = idx;
-    entity->revision = world->revision[idx];
+    e->idx = idx;
+    e->revision = w->revision[idx];
 
     return true;
 }
 
-bool remove_entity(World *world, Entity entity)
+bool remove_entity(struct world *w, struct entity e)
 {
-    if (!valid_entity(world, entity))
+    if (!valid_entity(w, e))
     {
         return false;
     }
 
-    if (world->free_idxs_amount == MAX_ENTITIES)
+    if (w->free_idxs_amount == MAX_ENTITIES)
     {
         return false;
     }
 
-    world->free_idxs[world->free_idxs_amount] = entity.idx;
-    world->free_idxs_amount++;
+    w->free_idxs[w->free_idxs_amount] = e.idx;
+    w->free_idxs_amount++;
 
-#define X(Type) world->Type[entity.idx] = (Type){0};
+#define X(Type) w->Type[e.idx] = (struct Type){0};
 #include "components.def"
 #undef X
 
     return true;
 }
 
-bool valid_entity(World *w, Entity entity)
+bool valid_entity(struct world *w, struct entity e)
 {
-    if (entity.idx >= MAX_ENTITIES)
+    if (e.idx >= MAX_ENTITIES)
     {
         return false;
     }
-    return w->revision[entity.idx] == entity.revision &&
-           w->initialized[entity.idx];
+    return w->revision[e.idx] == e.revision && w->initialized[e.idx];
 }

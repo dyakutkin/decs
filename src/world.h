@@ -14,7 +14,7 @@
          entity.idx++, entity.revision = w->revision[entity.idx])
 #define WC(world, entity, component) (&world->component[entity.idx])
 
-typedef struct
+struct world
 {
     size_t len;
     size_t free_idxs_amount;
@@ -23,12 +23,12 @@ typedef struct
     uint32_t revision[MAX_ENTITIES];
     bool initialized[MAX_ENTITIES];
 
-#define X(Type) Type Type[MAX_ENTITIES];
+#define X(Type) struct Type Type[MAX_ENTITIES];
 #include "components.def"
 #undef X
-} World;
+};
 
-World *world_alloc(void);
-bool new_entity(World *world, Entity *entity);
-bool remove_entity(World *world, Entity entity);
-bool valid_entity(World *world, Entity entity);
+struct world *world(void);
+bool new_entity(struct world *w, struct entity *entity);
+bool remove_entity(struct world *w, struct entity entity);
+bool valid_entity(struct world *w, struct entity entity);

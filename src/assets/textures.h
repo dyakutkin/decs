@@ -2,12 +2,12 @@
 
 #include "../include/raylib/raylib.h"
 
-typedef struct
+struct textures
 {
     Texture2D error;
     Texture2D chars;
     Texture2D terrain;
-} Textures;
+};
 
-Textures textures_load();
-void textures_unload(Textures *textures);
+struct textures textures();
+void textures_unload(struct textures *t);

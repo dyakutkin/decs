@@ -1,5 +1,6 @@
 #include <assert.h>
 
+#include "direction.h"
 #include "include/raylib/raylib.h"
 
 #include "actions.h"
@@ -12,7 +13,6 @@
 
 #include "assets/textures.h"
 
-#include "systems/example.h"
 #include "systems/render.h"
 
 #define SCREEN_WIDTH 1920
@@ -21,16 +21,20 @@
 
 int main(void)
 {
-    World *w = world_alloc();
-    Board *b = board_alloc();
+    struct action a1 = (struct action){
+        .tag = ACTION_TAG_DIRECTION,
+        .value.direction.action = DIRECTION_ACTION_MOVE,
+        .value.direction.value = DIRECTION_EAST,
+    };
+    struct world *w = world();
+    struct board *b = board();
 
-    Entity player = setup_actors(w, b);
+    struct entity player = setup_actors(w, b);
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
 
-    Textures textures = textures_load();
+    struct textures t = textures();
 
-    example_system(w);
     Camera2D camera = {0};
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
@@ -39,11 +43,11 @@ int main(void)
     {
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        render_system(&camera, &textures, b, w, player);
+        render_system(&camera, &t, b, w, player);
         EndDrawing();
     } while (!WindowShouldClose());
 
-    textures_unload(&textures);
+    textures_unload(&t);
 
     CloseWindow();
 

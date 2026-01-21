@@ -12,25 +12,25 @@
 #define BOARD_SIDE_TILES_AMOUNT 5000
 #define BOARD_TILES_AMOUNT (BOARD_SIDE_TILES_AMOUNT * BOARD_SIDE_TILES_AMOUNT)
 
-typedef struct
+struct board_point
 {
     int32_t x, y;
-} BoardPoint;
+};
 
 typedef struct
 {
-    OPT(Entity) occupier;
-    ALIST(Entity) ground;
-    ALIST(Event) events;
+    OPT(struct entity) occupier;
+    ALIST(struct entity) ground;
+    ALIST(struct entity) events;
 } BoardTile;
 
-typedef struct
+struct board
 {
     BoardTile tiles[BOARD_TILES_AMOUNT];
-} Board;
+};
 
-Board *board_alloc();
-bool board_point_eq(BoardPoint p1, BoardPoint p2);
-bool get_board_tile(Board *b, BoardPoint p, BoardTile **out);
-bool attempt_occupy(Board *b, BoardPoint p, Entity e);
-bool attempt_deoccupy(Board *b, BoardPoint p);
+struct board *board();
+bool board_point_eq(struct board_point p1, struct board_point p2);
+bool get_board_tile(struct board *b, struct board_point p, BoardTile **out);
+bool attempt_occupy(struct board *b, struct board_point p, struct entity e);
+bool attempt_deoccupy(struct board *b, struct board_point p);

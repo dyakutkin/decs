@@ -8,18 +8,18 @@ static Texture2D load_asset_as_texture(char *filename)
     return texture;
 }
 
-Textures textures_load()
+struct textures textures()
 {
-    return (Textures){
+    return (struct textures){
         .chars = load_asset_as_texture("./assets/chars.png"),
         .terrain = load_asset_as_texture("./assets/terrain.png"),
         .error = load_asset_as_texture("./assets/error.png"),
     };
 }
 
-void textures_unload(Textures *textures)
+void textures_unload(struct textures *t)
 {
-    UnloadTexture(textures->chars);
-    UnloadTexture(textures->terrain);
-    UnloadTexture(textures->error);
+    UnloadTexture(t->chars);
+    UnloadTexture(t->terrain);
+    UnloadTexture(t->error);
 }

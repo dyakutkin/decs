@@ -2,26 +2,26 @@
 
 #include "board.h"
 
-typedef enum
+enum board_situation_type
 {
     BOARD_SITUATION_ABSENT,
     BOARD_SITUATION_OCCUPIER,
     BOARD_SITUATION_ITEM,
-} BoardSituationType;
+};
 
-typedef struct
+struct board_situation
 {
-    BoardSituationType type;
-    BoardPoint point;
-} BoardSituation;
+    enum board_situation_type type;
+    struct board_point point;
+};
 
-typedef enum
+enum entity_flag
 {
     ENTITY_FLAG_PLAYER = 1 << 0,
     ENTITY_FLAG_NPC = 1 << 1,
-} ENTITY_FLAGS;
+};
 
-typedef struct
+struct entity_flags
 {
-    ENTITY_FLAGS flags;
-} EntityFlags;
+    enum entity_flag flags;
+};

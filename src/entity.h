@@ -5,8 +5,8 @@
 
 #define MAX_ENTITIES 1000
 
-typedef struct
+struct entity
 {
     size_t idx;
     uint32_t revision;
-} Entity;
+};

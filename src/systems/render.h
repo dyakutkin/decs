@@ -9,20 +9,20 @@
 #include "../include/raylib/raylib.h"
 #include "../world.h"
 
-typedef enum
+enum tile_type
 {
-    UNKNOWN,
-    GRASS,
-    WALL,
-    PLAYER,
-    NPC,
-} TileType;
+    TILE_TYPE_UNKNOWN,
+    TILE_TYPE_GRASS,
+    TILE_TYPE_WALL,
+    TILE_TYPE_PLAYER,
+    TILE_TYPE_NPC,
+};
 
-typedef struct
+struct texture_desc
 {
     size_t x;
     size_t y;
     Texture2D *texture;
-} TextureDesc;
-void render_system(Camera2D *camera, Textures *textures, Board *b, World *w,
-                   Entity player);
+};
+void render_system(Camera2D *camera, struct textures *t, struct board *b,
+                   struct world *w, struct entity player);
