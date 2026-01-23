@@ -1,12 +1,11 @@
 #include <assert.h>
 
-#include "direction.h"
 #include "include/raylib/raylib.h"
 
-#include "actions.h"
 #include "board.h"
 #include "entity.h"
 #include "option.h"
+#include "turn.h"
 #include "world.h"
 
 #include "setup.h"
@@ -21,12 +20,9 @@
 
 int main(void)
 {
-    struct action a1 = (struct action){
-        .kind = ACTION_MOVE,
-        .payload.direction = DIRECTION_EAST,
-    };
+    struct offsets_global *og = offsets_global();
+    struct board *b = board(og);
     struct world *w = world();
-    struct board *b = board();
 
     struct entity player = setup_actors(w, b);
 

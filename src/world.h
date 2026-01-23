@@ -8,10 +8,11 @@
 #include "components.h"
 #include "entity.h"
 
-#define ITERW(world, entity)                                                   \
-    for (Entity entity = (Entity){.idx = 0, .revision = w->revision[0]};       \
-         entity.idx < w->len;                                                  \
-         entity.idx++, entity.revision = w->revision[entity.idx])
+#define ITERW(_world, _entity)                                                 \
+    for (struct entity _entity =                                               \
+             (struct entity){.idx = 0, .revision = _world->revision[0]};       \
+         _entity.idx < _world->len;                                            \
+         _entity.idx++, _entity.revision = _world->revision[_entity.idx])
 #define WC(world, entity, component) (&world->component[entity.idx])
 
 struct world

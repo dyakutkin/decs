@@ -3,34 +3,49 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "alist.h"
+#include "direction.h"
 #include "entity.h"
 #include "events.h"
-
-#include "alist.h"
+#include "flags.h"
 #include "option.h"
+#include "turn.h"
 
 #define BOARD_SIDE_TILES_AMOUNT 5000
 #define BOARD_TILES_AMOUNT (BOARD_SIDE_TILES_AMOUNT * BOARD_SIDE_TILES_AMOUNT)
 
-struct board_point
+struct board_vec
 {
     int32_t x, y;
 };
 
-typedef struct
+bool board_vec_eq(struct board_vec p1, struct board_vec p2);
+struct board_vec board_vec_add(struct board_vec a, struct board_vec b);
+struct board_vec board_vec_from_direction(enum direction d);
+
+struct event_broadcast
+{
+    struct event event;
+    size_t offset;
+};
+
+struct board_tile
 {
     OPT(struct entity) occupier;
     ALIST(struct entity) ground;
-    ALIST(struct event) events;
-} BoardTile;
+    ALIST(struct event_broadcast) event_broadcasts;
+};
 
 struct board
 {
-    BoardTile tiles[BOARD_TILES_AMOUNT];
+    struct board_tile tiles[BOARD_TILES_AMOUNT];
+    struct offsets_global *og;
 };
 
-struct board *board();
-bool board_point_eq(struct board_point p1, struct board_point p2);
-bool get_board_tile(struct board *b, struct board_point p, BoardTile **out);
-bool attempt_occupy(struct board *b, struct board_point p, struct entity e);
-bool attempt_deoccupy(struct board *b, struct board_point p);
+struct board *board(struct offsets_global *og);
+bool board_get_tile(struct board *b, struct board_vec p,
+                    struct board_tile **out);
+bool board_occupy(struct board *b, struct board_vec p, struct entity e);
+bool board_deoccupy(struct board *b, struct board_vec p);
+void board_broadcast_event(struct board *b, struct event e,
+                           struct board_vec *points, size_t points_len);

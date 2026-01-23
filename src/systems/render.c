@@ -5,8 +5,8 @@
 #define PLAYER_RENDER_RADIUS 5
 #define PLAYER_RENDER_SQUARE_SIDE (PLAYER_RENDER_RADIUS * 2 + 1)
 
-static void draw_tile(struct texture_desc texture_desc,
-                      struct board_point point, float texture_size_px)
+static void draw_tile(struct texture_desc texture_desc, struct board_vec point,
+                      float texture_size_px)
 {
     DrawTexturePro(*texture_desc.texture,
                    (Rectangle){
@@ -60,9 +60,9 @@ void render_system(Camera2D *camera, struct textures *t, struct board *b,
     {
         return;
     }
-    struct board_point player_pos = situation->point;
+    struct board_vec player_pos = situation->point;
 
-    struct board_point left_upper = {
+    struct board_vec left_upper = {
         .x = player_pos.x - PLAYER_RENDER_RADIUS,
         .y = player_pos.y - PLAYER_RENDER_RADIUS,
     };
@@ -81,10 +81,10 @@ void render_system(Camera2D *camera, struct textures *t, struct board *b,
     {
         for (int y = left_upper.y; y < top_y; y++)
         {
-            BoardTile *tile;
+            struct board_tile *tile;
             enum tile_type tile_type;
 
-            if (get_board_tile(b, (struct board_point){x, y}, &tile) &&
+            if (board_get_tile(b, (struct board_vec){x, y}, &tile) &&
                 tile->occupier.set && valid_entity(w, tile->occupier.value))
             {
                 struct entity_flags *flags = WC(w, player, entity_flags);
@@ -113,7 +113,7 @@ void render_system(Camera2D *camera, struct textures *t, struct board *b,
 
             struct texture_desc desc = resolve_texture_desc(t, tile_type);
 
-            draw_tile(desc, (struct board_point){.x = x, .y = y},
+            draw_tile(desc, (struct board_vec){.x = x, .y = y},
                       texture_size_px);
         }
     }

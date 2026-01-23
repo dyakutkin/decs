@@ -7,16 +7,15 @@
 #include "setup.h"
 #include "world.h"
 
-static bool place_entity_on_board(struct entity entity,
-                                  struct board_point point, struct world *w,
-                                  struct board *b)
+static bool place_entity_on_board(struct entity entity, struct board_vec point,
+                                  struct world *w, struct board *b)
 {
     if (!valid_entity(w, entity))
     {
         return false;
     }
 
-    if (!attempt_occupy(b, point, entity))
+    if (!board_occupy(b, point, entity))
     {
         return false;
     }
@@ -32,7 +31,7 @@ struct entity setup_actors(struct world *w, struct board *b)
     struct entity player;
 
     assert(create_entity(w, &player));
-    assert(place_entity_on_board(player, (struct board_point){1, 1}, w, b));
+    assert(place_entity_on_board(player, (struct board_vec){1, 1}, w, b));
     FSET(WC(w, player, entity_flags)->flags, ENTITY_FLAG_PLAYER);
 
     return player;

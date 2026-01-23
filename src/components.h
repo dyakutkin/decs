@@ -1,6 +1,9 @@
 #pragma once
 
+#include "actions.h"
 #include "board.h"
+#include "direction.h"
+#include "option.h"
 
 enum board_situation_type
 {
@@ -12,7 +15,8 @@ enum board_situation_type
 struct board_situation
 {
     enum board_situation_type type;
-    struct board_point point;
+    struct board_vec point;
+    enum direction facing;
 };
 
 enum entity_flag
@@ -24,4 +28,9 @@ enum entity_flag
 struct entity_flags
 {
     enum entity_flag flags;
+};
+
+struct picked_action
+{
+    OPT(struct action) action;
 };

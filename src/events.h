@@ -2,8 +2,9 @@
 
 #include "direction.h"
 #include "entity.h"
+#include "turn.h"
 
-struct percepted_actor
+struct event_actor
 {
     struct entity entity;
     // PerceptedTags tags;
@@ -33,11 +34,13 @@ enum event_status
 
 struct event
 {
-    struct percepted_actor subject;
+    turn_id turn;
+
+    struct event_actor subject;
     enum event_kind kind;
     union
     {
-        struct percepted_actor object;
+        struct event_actor object;
         enum direction direction;
         enum event_status status;
     } payload;
