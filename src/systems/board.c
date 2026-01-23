@@ -23,6 +23,7 @@ static void handle_move(struct board *b, struct offsets_global *og,
                                       .origin = s->point}},
 
             (struct board_vec[2]){s->point, new_point}, 2);
+        return;
     }
 
     board_broadcast_event(
@@ -37,8 +38,10 @@ static void handle_move(struct board *b, struct offsets_global *og,
 
         (struct board_vec[2]){s->point, new_point}, 2);
 
+    assert(board_deoccupy(b, s->point));
     s->type = BOARD_SITUATION_OCCUPIER;
     s->point = new_point;
+    pa->action.set = false;
 }
 
 void board_position_update_system(struct world *w, struct board *b,

@@ -1,11 +1,14 @@
 #include <assert.h>
 
+#include "actions.h"
+#include "direction.h"
 #include "include/raylib/raylib.h"
 
 #include "board.h"
 #include "entity.h"
 #include "offsets.h"
 #include "option.h"
+#include "systems/board.h"
 #include "world.h"
 
 #include "setup.h"
@@ -36,6 +39,37 @@ int main(void)
 
     do
     {
+        bool got_input = false;
+        enum direction direction;
+
+        if (IsKeyReleased(KEY_RIGHT))
+        {
+            direction = DIRECTION_EAST;
+            got_input = true;
+        }
+        else if (IsKeyReleased(KEY_LEFT))
+        {
+            direction = DIRECTION_WEST;
+            got_input = true;
+        }
+        else if (IsKeyReleased(KEY_UP))
+        {
+            direction = DIRECTION_NORTH;
+            got_input = true;
+        }
+        else if (IsKeyReleased(KEY_DOWN))
+        {
+            direction = DIRECTION_SOUTH;
+            got_input = true;
+        }
+
+        if (got_input)
+        {
+            OPTSET(WC(w, player, picked_action)->action,
+                   ((struct action){.kind = ACTION_MOVE,
+                                    .payload.direction = direction}))
+        }
+        board_position_update_system(w, b, og);
         BeginDrawing();
         ClearBackground(RAYWHITE);
         render_system(&camera, &t, b, w, player);

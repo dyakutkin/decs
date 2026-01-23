@@ -17,10 +17,10 @@ struct board_vec board_vec_from_direction(enum direction d)
         result = (struct board_vec){0, 1};
         break;
     case DIRECTION_EAST:
-        result = (struct board_vec){-1, 0};
+        result = (struct board_vec){1, 0};
         break;
     case DIRECTION_WEST:
-        result = (struct board_vec){1, 0};
+        result = (struct board_vec){-1, 0};
         break;
     }
     return result;

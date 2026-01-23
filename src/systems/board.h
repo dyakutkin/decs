@@ -1,5 +1,7 @@
 #pragma once
 
+#include <assert.h>
+
 #include "../board.h"
 #include "../entity.h"
 #include "../offsets.h"
