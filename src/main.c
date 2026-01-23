@@ -8,14 +8,15 @@
 #include "entity.h"
 #include "offsets.h"
 #include "option.h"
-#include "systems/board.h"
 #include "world.h"
 
 #include "setup.h"
 
 #include "assets/textures.h"
 
+#include "systems/board.h"
 #include "systems/render.h"
+#include "systems/vision.h"
 
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
@@ -65,11 +66,14 @@ int main(void)
 
         if (got_input)
         {
-            OPTSET(WC(w, player, picked_action)->action,
-                   ((struct action){.kind = ACTION_MOVE,
-                                    .payload.direction = direction}))
+            struct action action = {.kind = ACTION_MOVE,
+                                    .payload.direction = direction};
+            OPTSET(WC(w, player, picked_action)->action, action);
         }
-        board_position_update_system(w, b, og);
+
+        board_position_update_system(w, b);
+        percepted_events_update_system(w, b);
+
         BeginDrawing();
         ClearBackground(RAYWHITE);
         render_system(&camera, &t, b, w, player);

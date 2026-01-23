@@ -16,3 +16,8 @@
         list.items[list.len] = element;                                        \
         list.len++;                                                            \
     } while (0)
+#define ACLEAR(list)                                                           \
+    do                                                                         \
+    {                                                                          \
+        list.len = 0;                                                          \
+    } while (0)

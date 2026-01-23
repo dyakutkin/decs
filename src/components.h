@@ -1,7 +1,9 @@
 #pragma once
 
 #include "actions.h"
+#include "alist.h"
 #include "board.h"
+#include "bvec.h"
 #include "direction.h"
 #include "option.h"
 
@@ -23,6 +25,7 @@ enum entity_flag
 {
     ENTITY_FLAG_PLAYER = 1 << 0,
     ENTITY_FLAG_NPC = 1 << 1,
+    ENTITY_FLAG_VISION = 1 << 2,
 };
 
 struct entity_flags
@@ -33,4 +36,9 @@ struct entity_flags
 struct picked_action
 {
     OPT(struct action) action;
+};
+
+struct percepted_events
+{
+    ALIST(struct event_broadcast) broadcasts;
 };

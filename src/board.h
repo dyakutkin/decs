@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdarg.h>
 
 #include "alist.h"
 #include "bvec.h"
@@ -12,9 +13,14 @@
 #define BOARD_SIDE_TILES_AMOUNT 5000
 #define BOARD_TILES_AMOUNT (BOARD_SIDE_TILES_AMOUNT * BOARD_SIDE_TILES_AMOUNT)
 
+#define BROADCAST_EVENT(BOARD, EVENT, ...)                                     \
+    board_broadcast_event((BOARD), (EVENT), __VA_ARGS__,                       \
+                          ((struct board_vec){-1, -1}))
+
 struct event_broadcast
 {
     struct event event;
+    turn_id turn;
     size_t offset;
 };
 
@@ -36,5 +42,4 @@ bool board_get_tile(struct board *b, struct board_vec p,
                     struct board_tile **out);
 bool board_occupy(struct board *b, struct board_vec p, struct entity e);
 bool board_deoccupy(struct board *b, struct board_vec p);
-void board_broadcast_event(struct board *b, struct event e,
-                           struct board_vec *points, size_t points_len);
+void board_broadcast_event(struct board *b, struct event e, ...);

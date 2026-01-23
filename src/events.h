@@ -13,6 +13,8 @@ struct event_actor
 
 enum event_kind
 {
+    EVENT_NOTHING,
+
     // "subject" events (no payload).
     EVENT_EXISTS = 100,
     EVENT_DIES,
@@ -35,7 +37,6 @@ enum event_status
 
 struct event
 {
-    turn_id turn;
 
     struct event_actor subject;
     enum event_kind kind;

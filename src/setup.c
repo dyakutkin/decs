@@ -33,6 +33,7 @@ struct entity setup_actors(struct world *w, struct board *b)
     assert(create_entity(w, &player));
     assert(place_entity_on_board(player, (struct board_vec){1, 1}, w, b));
     FSET(WC(w, player, entity_flags)->flags, ENTITY_FLAG_PLAYER);
+    FSET(WC(w, player, entity_flags)->flags, ENTITY_FLAG_VISION);
 
     return player;
 }

@@ -1,5 +1,6 @@
 #include "board.h"
 #include "offsets.h"
+#include <stdarg.h>
 
 struct board *board(struct offsets_global *og)
 {
@@ -70,8 +71,8 @@ bool board_deoccupy(struct board *b, struct board_vec p)
     return true;
 }
 
-void board_broadcast_event(struct board *b, struct event e,
-                           struct board_vec *points, size_t points_len)
+void _board_broadcast_event(struct board *b, struct event e,
+                            struct board_vec *points, size_t points_len)
 {
     for (size_t i = 0; i < points_len; i++)
     {
@@ -88,4 +89,35 @@ void board_broadcast_event(struct board *b, struct event e,
             ((struct event_broadcast){.event = e, .offset = b->og->events}));
         b->og->events++;
     }
+}
+
+void board_broadcast_event(struct board *b, struct event e, ...)
+{
+    va_list ap;
+    va_start(ap, e);
+
+    for (;;)
+    {
+        struct board_vec p = va_arg(ap, struct board_vec);
+        if (p.x < 0 || p.y < 0)
+        {
+            break;
+        }
+
+        struct board_tile *tile;
+        if (!board_get_tile(b, p, &tile))
+        {
+            continue;
+        }
+
+        // TODO: come up with events cleaning up strategy (e.g. using ring
+        // buffer instead of dynamic array for board tiles' event broadcasts).
+        AAPPEND(tile->event_broadcasts,
+                ((struct event_broadcast){.event = e,
+                                          .offset = b->og->events,
+                                          .turn = b->og->turn_next}));
+        b->og->events++;
+    }
+
+    va_end(ap);
 }

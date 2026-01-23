@@ -1,8 +1,7 @@
 #include "board.h"
 
-static void handle_move(struct board *b, struct offsets_global *og,
-                        struct entity e, struct board_situation *s,
-                        struct picked_action *pa)
+static void handle_move(struct board *b, struct entity e,
+                        struct board_situation *s, struct picked_action *pa)
 {
     // Update facing regardless of the move success.
     s->facing = pa->action.value.payload.direction;
@@ -12,31 +11,22 @@ static void handle_move(struct board *b, struct offsets_global *og,
 
     if (!board_occupy(b, new_point, e))
     {
-        board_broadcast_event(
-            b,
-            (struct event){
-                .turn = og->turn_next,
-                .subject = (struct event_actor){.entity = e},
-                .kind = EVENT_BUMPS,
-                .payload.direction = {.direction =
-                                          pa->action.value.payload.direction,
-                                      .origin = s->point}},
-
-            (struct board_vec[2]){s->point, new_point}, 2);
+        struct event event = {
+            .subject = (struct event_actor){.entity = e},
+            .kind = EVENT_BUMPS,
+            .payload.direction = {.direction =
+                                      pa->action.value.payload.direction,
+                                  .origin = s->point}};
+        BROADCAST_EVENT(b, event, s->point, new_point);
         return;
     }
 
-    board_broadcast_event(
-        b,
-        (struct event){
-            .turn = og->turn_next,
-            .subject = (struct event_actor){.entity = e},
-            .kind = EVENT_WALKS,
-            .payload.direction = {.direction =
-                                      pa->action.value.payload.direction,
-                                  .origin = s->point}},
-
-        (struct board_vec[2]){s->point, new_point}, 2);
+    struct event event = {
+        .subject = (struct event_actor){.entity = e},
+        .kind = EVENT_WALKS,
+        .payload.direction = {.direction = pa->action.value.payload.direction,
+                              .origin = s->point}};
+    BROADCAST_EVENT(b, event, s->point, new_point);
 
     assert(board_deoccupy(b, s->point));
     s->type = BOARD_SITUATION_OCCUPIER;
@@ -44,8 +34,7 @@ static void handle_move(struct board *b, struct offsets_global *og,
     pa->action.set = false;
 }
 
-void board_position_update_system(struct world *w, struct board *b,
-                                  struct offsets_global *og)
+void board_position_update_system(struct world *w, struct board *b)
 {
     ITERW(w, e)
     {
@@ -63,16 +52,13 @@ void board_position_update_system(struct world *w, struct board *b,
         struct picked_action *pa = WC(w, e, picked_action);
         if (pa->action.set && pa->action.value.kind == ACTION_MOVE)
         {
-            handle_move(b, og, e, s, pa);
+            handle_move(b, e, s, pa);
         }
 
-        board_broadcast_event(b,
-                              (struct event){
-                                  .turn = og->turn_next,
-                                  .subject = (struct event_actor){.entity = e},
-                                  .kind = EVENT_EXISTS,
-                              },
-
-                              (struct board_vec[1]){s->point}, 1);
+        struct event event = {
+            .subject = (struct event_actor){.entity = e},
+            .kind = EVENT_EXISTS,
+        };
+        BROADCAST_EVENT(b, event, s->point);
     }
 }
