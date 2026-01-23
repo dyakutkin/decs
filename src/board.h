@@ -1,27 +1,16 @@
 #pragma once
 
-#include <stdbool.h>
-#include <stdint.h>
 
 #include "alist.h"
-#include "direction.h"
+#include "bvec.h"
 #include "entity.h"
 #include "events.h"
 #include "flags.h"
+#include "offsets.h"
 #include "option.h"
-#include "turn.h"
 
 #define BOARD_SIDE_TILES_AMOUNT 5000
 #define BOARD_TILES_AMOUNT (BOARD_SIDE_TILES_AMOUNT * BOARD_SIDE_TILES_AMOUNT)
-
-struct board_vec
-{
-    int32_t x, y;
-};
-
-bool board_vec_eq(struct board_vec p1, struct board_vec p2);
-struct board_vec board_vec_add(struct board_vec a, struct board_vec b);
-struct board_vec board_vec_from_direction(enum direction d);
 
 struct event_broadcast
 {

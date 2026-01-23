@@ -4,8 +4,8 @@
 
 #include "board.h"
 #include "entity.h"
+#include "offsets.h"
 #include "option.h"
-#include "turn.h"
 #include "world.h"
 
 #include "setup.h"

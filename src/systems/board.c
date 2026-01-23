@@ -14,21 +14,26 @@ static void handle_move(struct board *b, struct offsets_global *og,
     {
         board_broadcast_event(
             b,
-            (struct event){.turn = og->turn_next,
-                           .subject = (struct event_actor){.entity = e},
-                           .kind = EVENT_BUMPS,
-                           .payload.direction =
-                               pa->action.value.payload.direction},
+            (struct event){
+                .turn = og->turn_next,
+                .subject = (struct event_actor){.entity = e},
+                .kind = EVENT_BUMPS,
+                .payload.direction = {.direction =
+                                          pa->action.value.payload.direction,
+                                      .origin = s->point}},
 
             (struct board_vec[2]){s->point, new_point}, 2);
     }
 
     board_broadcast_event(
         b,
-        (struct event){.turn = og->turn_next,
-                       .subject = (struct event_actor){.entity = e},
-                       .kind = EVENT_WALKS,
-                       .payload.direction = pa->action.value.payload.direction},
+        (struct event){
+            .turn = og->turn_next,
+            .subject = (struct event_actor){.entity = e},
+            .kind = EVENT_WALKS,
+            .payload.direction = {.direction =
+                                      pa->action.value.payload.direction,
+                                  .origin = s->point}},
 
         (struct board_vec[2]){s->point, new_point}, 2);
 

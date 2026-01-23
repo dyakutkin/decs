@@ -1,8 +1,9 @@
 #pragma once
 
+#include "bvec.h"
 #include "direction.h"
 #include "entity.h"
-#include "turn.h"
+#include "offsets.h"
 
 struct event_actor
 {
@@ -41,7 +42,11 @@ struct event
     union
     {
         struct event_actor object;
-        enum direction direction;
+        struct
+        {
+            enum direction direction;
+            struct board_vec origin;
+        } direction;
         enum event_status status;
     } payload;
 };
