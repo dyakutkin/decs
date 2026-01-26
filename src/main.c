@@ -24,15 +24,15 @@
 
 int main(void)
 {
-    struct offsets_global *og = offsets_global();
-    struct board *b = board(og);
-    struct world *w = world();
+    offsets_global *og = offsets_global_allocate();
+    board *b = board_allocate(og);
+    world *w = world_allocate();
 
-    struct entity player = setup_actors(w, b);
+    entity player = setup_actors(w, b);
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
 
-    struct textures t = textures();
+    textures t = textures_allocate();
 
     Camera2D camera = {0};
     camera.rotation = 0.0f;
@@ -41,7 +41,7 @@ int main(void)
     do
     {
         bool got_input = false;
-        enum direction direction;
+        direction direction;
 
         if (IsKeyReleased(KEY_RIGHT))
         {
@@ -66,8 +66,8 @@ int main(void)
 
         if (got_input)
         {
-            struct action action = {.kind = ACTION_MOVE,
-                                    .payload.direction = direction};
+            action action = {.kind = ACTION_MOVE,
+                             .payload.direction = direction};
             OPTSET(WC(w, player, picked_action)->action, action);
         }
 

@@ -3,7 +3,7 @@
 #include "direction.h"
 #include "entity.h"
 
-enum action_kind
+typedef enum
 {
     // "subject" actions (no payload).
     ACTION_DIE = 100,
@@ -13,14 +13,14 @@ enum action_kind
 
     // "directional" actions.
     ACTION_MOVE = 300,
-};
+} action_kind;
 
-struct action
+typedef struct
 {
-    enum action_kind kind;
+    action_kind kind;
     union
     {
-        struct entity object;
-        enum direction direction;
+        entity object;
+        direction direction;
     } payload;
-};
+} action;

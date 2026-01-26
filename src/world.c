@@ -1,13 +1,13 @@
 #include "world.h"
 #include "entity.h"
 
-struct world *world(void)
+world *world_allocate(void)
 {
-    struct world *w = calloc(1, sizeof(struct world));
+    world *w = calloc(1, sizeof(world));
     return w;
 }
 
-bool create_entity(struct world *w, struct entity *e)
+bool create_entity(world *w, entity *e)
 {
     size_t idx;
     if (w->free_idxs_amount > 0)
@@ -34,7 +34,7 @@ bool create_entity(struct world *w, struct entity *e)
     return true;
 }
 
-bool remove_entity(struct world *w, struct entity e)
+bool remove_entity(world *w, entity e)
 {
     if (!valid_entity(w, e))
     {
@@ -49,14 +49,14 @@ bool remove_entity(struct world *w, struct entity e)
     w->free_idxs[w->free_idxs_amount] = e.idx;
     w->free_idxs_amount++;
 
-#define X(Type) w->Type[e.idx] = (struct Type){0};
+#define X(Type) w->Type[e.idx] = (Type){0};
 #include "components.def"
 #undef X
 
     return true;
 }
 
-bool valid_entity(struct world *w, struct entity e)
+bool valid_entity(world *w, entity e)
 {
     if (e.idx >= MAX_ENTITIES)
     {

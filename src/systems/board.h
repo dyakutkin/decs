@@ -7,4 +7,4 @@
 #include "../offsets.h"
 #include "../world.h"
 
-void board_position_update_system(struct world *w, struct board *b);
+void board_position_update_system(world *w, board *b);

@@ -7,8 +7,8 @@
 #include "setup.h"
 #include "world.h"
 
-static bool place_entity_on_board(struct entity entity, struct board_vec point,
-                                  struct world *w, struct board *b)
+static bool place_entity_on_board(entity entity, board_vec point, world *w,
+                                  board *b)
 {
     if (!valid_entity(w, entity))
     {
@@ -20,18 +20,18 @@ static bool place_entity_on_board(struct entity entity, struct board_vec point,
         return false;
     }
 
-    *(WC(w, entity, board_situation)) = (struct board_situation){
-        .type = BOARD_SITUATION_OCCUPIER, .point = point};
+    *(WC(w, entity, board_situation)) =
+        (board_situation){.type = BOARD_SITUATION_OCCUPIER, .point = point};
 
     return true;
 }
 
-struct entity setup_actors(struct world *w, struct board *b)
+entity setup_actors(world *w, board *b)
 {
-    struct entity player;
+    entity player;
 
     assert(create_entity(w, &player));
-    assert(place_entity_on_board(player, (struct board_vec){1, 1}, w, b));
+    assert(place_entity_on_board(player, (board_vec){1, 1}, w, b));
     FSET(WC(w, player, entity_flags)->flags, ENTITY_FLAG_PLAYER);
     FSET(WC(w, player, entity_flags)->flags, ENTITY_FLAG_VISION);
 

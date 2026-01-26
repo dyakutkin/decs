@@ -5,11 +5,11 @@
 
 #include "direction.h"
 
-struct board_vec
+typedef struct
 {
     int32_t x, y;
-};
+} board_vec;
 
-bool board_vec_eq(struct board_vec p1, struct board_vec p2);
-struct board_vec board_vec_add(struct board_vec a, struct board_vec b);
-struct board_vec board_vec_from_direction(enum direction d);
+bool board_vec_eq(board_vec p1, board_vec p2);
+board_vec board_vec_add(board_vec a, board_vec b);
+board_vec board_vec_from_direction(direction d);

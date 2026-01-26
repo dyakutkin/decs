@@ -5,13 +5,13 @@
 #include "entity.h"
 #include "offsets.h"
 
-struct event_actor
+typedef struct
 {
-    struct entity entity;
+    entity entity;
     // PerceptedTags tags;
-};
+} event_actor;
 
-enum event_kind
+typedef enum
 {
     EVENT_NOTHING,
 
@@ -28,26 +28,26 @@ enum event_kind
     // "directional" events.
     EVENT_WALKS = 300,
     EVENT_BUMPS,
-};
+} event_kind;
 
 enum event_status
 {
     EVENT_STATUS_HUNGER,
 };
 
-struct event
+typedef struct
 {
 
-    struct event_actor subject;
-    enum event_kind kind;
+    event_actor subject;
+    event_kind kind;
     union
     {
-        struct event_actor object;
+        event_actor object;
         struct
         {
-            enum direction direction;
-            struct board_vec origin;
+            direction direction;
+            board_vec origin;
         } direction;
         enum event_status status;
     } payload;
-};
+} event;

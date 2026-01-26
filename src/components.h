@@ -7,38 +7,38 @@
 #include "direction.h"
 #include "option.h"
 
-enum board_situation_type
+typedef enum
 {
     BOARD_SITUATION_ABSENT,
     BOARD_SITUATION_OCCUPIER,
     BOARD_SITUATION_ITEM,
-};
+} board_situation_type;
 
-struct board_situation
+typedef struct
 {
-    enum board_situation_type type;
-    struct board_vec point;
-    enum direction facing;
-};
+    board_situation_type type;
+    board_vec point;
+    direction facing;
+} board_situation;
 
-enum entity_flag
+typedef enum
 {
     ENTITY_FLAG_PLAYER = 1 << 0,
     ENTITY_FLAG_NPC = 1 << 1,
     ENTITY_FLAG_VISION = 1 << 2,
-};
+} entity_flag;
 
-struct entity_flags
+typedef struct
 {
-    enum entity_flag flags;
-};
+    entity_flag flags;
+} entity_flags;
 
-struct picked_action
+typedef struct
 {
-    OPT(struct action) action;
-};
+    OPT(action) action;
+} picked_action;
 
-struct percepted_events
+typedef struct
 {
-    ALIST(struct event_broadcast) broadcasts;
-};
+    ALIST(event_broadcast) broadcasts;
+} percepted_events;

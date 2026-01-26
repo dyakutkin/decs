@@ -14,32 +14,30 @@
 #define BOARD_TILES_AMOUNT (BOARD_SIDE_TILES_AMOUNT * BOARD_SIDE_TILES_AMOUNT)
 
 #define BROADCAST_EVENT(BOARD, EVENT, ...)                                     \
-    board_broadcast_event((BOARD), (EVENT), __VA_ARGS__,                       \
-                          ((struct board_vec){-1, -1}))
+    board_broadcast_event((BOARD), (EVENT), __VA_ARGS__, ((board_vec){-1, -1}))
 
-struct event_broadcast
+typedef struct
 {
-    struct event event;
+    event event;
     turn_id turn;
     size_t offset;
-};
+} event_broadcast;
 
-struct board_tile
+typedef struct
 {
-    OPT(struct entity) occupier;
-    ALIST(struct entity) ground;
-    ALIST(struct event_broadcast) event_broadcasts;
-};
+    OPT(entity) occupier;
+    ALIST(entity) ground;
+    ALIST(event_broadcast) event_broadcasts;
+} board_tile;
 
-struct board
+typedef struct
 {
-    struct board_tile tiles[BOARD_TILES_AMOUNT];
-    struct offsets_global *og;
-};
+    board_tile tiles[BOARD_TILES_AMOUNT];
+    offsets_global *og;
+} board;
 
-struct board *board(struct offsets_global *og);
-bool board_get_tile(struct board *b, struct board_vec p,
-                    struct board_tile **out);
-bool board_occupy(struct board *b, struct board_vec p, struct entity e);
-bool board_deoccupy(struct board *b, struct board_vec p);
-void board_broadcast_event(struct board *b, struct event e, ...);
+board *board_allocate(offsets_global *og);
+bool board_get_tile(board *b, board_vec p, board_tile **out);
+bool board_occupy(board *b, board_vec p, entity e);
+bool board_deoccupy(board *b, board_vec p);
+void board_broadcast_event(board *b, event e, ...);

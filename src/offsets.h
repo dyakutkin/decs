@@ -4,12 +4,12 @@
 
 typedef size_t turn_id;
 
-struct offsets_global
+typedef struct
 {
     turn_id turn_current;
     turn_id turn_next;
     size_t events;
-};
+} offsets_global;
 
-struct offsets_global *offsets_global();
-void offsets_global_inc(struct offsets_global *t);
+offsets_global *offsets_global_allocate();
+void offsets_global_inc(offsets_global *t);

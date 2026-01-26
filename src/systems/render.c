@@ -5,7 +5,7 @@
 #define PLAYER_RENDER_RADIUS 5
 #define PLAYER_RENDER_SQUARE_SIDE (PLAYER_RENDER_RADIUS * 2 + 1)
 
-static void draw_tile(struct texture_desc texture_desc, struct board_vec point,
+static void draw_tile(texture_desc texture_desc, board_vec point,
                       float texture_size_px)
 {
     DrawTexturePro(*texture_desc.texture,
@@ -24,22 +24,21 @@ static void draw_tile(struct texture_desc texture_desc, struct board_vec point,
                    (Vector2){.x = 0, .y = 0}, 0, LIGHTGRAY);
 }
 
-static struct texture_desc resolve_texture_desc(struct textures *t,
-                                                enum tile_type tile_type)
+static texture_desc resolve_texture_desc(textures *t, tile_type tile_type)
 {
     switch (tile_type)
     {
     case TILE_TYPE_PLAYER:
-        return (struct texture_desc){.texture = &t->chars, .x = 0, .y = 0};
+        return (texture_desc){.texture = &t->chars, .x = 0, .y = 0};
     case TILE_TYPE_NPC:
-        return (struct texture_desc){.texture = &t->chars, .x = 0, .y = 1};
+        return (texture_desc){.texture = &t->chars, .x = 0, .y = 1};
     case TILE_TYPE_GRASS:
-        return (struct texture_desc){.texture = &t->terrain, .x = 0, .y = 0};
+        return (texture_desc){.texture = &t->terrain, .x = 0, .y = 0};
     case TILE_TYPE_WALL:
-        return (struct texture_desc){.texture = &t->terrain, .x = 0, .y = 1};
+        return (texture_desc){.texture = &t->terrain, .x = 0, .y = 1};
     case TILE_TYPE_UNKNOWN:
     default:
-        return (struct texture_desc){.texture = &t->error, .x = 0, .y = 0};
+        return (texture_desc){.texture = &t->error, .x = 0, .y = 0};
     }
 }
 
@@ -48,21 +47,21 @@ static float map_tile_size()
     return (float)GetScreenHeight() / PLAYER_RENDER_SQUARE_SIDE;
 }
 
-void render_system(Camera2D *camera, struct textures *t, struct board *b,
-                   struct world *w, struct entity player)
+void render_system(Camera2D *camera, textures *t, board *b, world *w,
+                   entity player)
 {
     if (!valid_entity(w, player))
     {
         return;
     }
-    struct board_situation *situation = WC(w, player, board_situation);
+    board_situation *situation = WC(w, player, board_situation);
     if (situation->type != BOARD_SITUATION_OCCUPIER)
     {
         return;
     }
-    struct board_vec player_pos = situation->point;
+    board_vec player_pos = situation->point;
 
-    struct board_vec left_upper = {
+    board_vec left_upper = {
         .x = player_pos.x - PLAYER_RENDER_RADIUS,
         .y = player_pos.y - PLAYER_RENDER_RADIUS,
     };
@@ -81,13 +80,13 @@ void render_system(Camera2D *camera, struct textures *t, struct board *b,
     {
         for (int y = left_upper.y; y < top_y; y++)
         {
-            struct board_tile *tile;
-            enum tile_type tile_type;
+            board_tile *tile;
+            tile_type tile_type;
 
-            if (board_get_tile(b, (struct board_vec){x, y}, &tile) &&
+            if (board_get_tile(b, (board_vec){x, y}, &tile) &&
                 tile->occupier.set && valid_entity(w, tile->occupier.value))
             {
-                struct entity_flags *flags = WC(w, player, entity_flags);
+                entity_flags *flags = WC(w, player, entity_flags);
 
                 if (FCONTAINS(flags->flags, ENTITY_FLAG_PLAYER))
                 {
@@ -111,10 +110,9 @@ void render_system(Camera2D *camera, struct textures *t, struct board *b,
                 tile_type = TILE_TYPE_GRASS;
             }
 
-            struct texture_desc desc = resolve_texture_desc(t, tile_type);
+            texture_desc desc = resolve_texture_desc(t, tile_type);
 
-            draw_tile(desc, (struct board_vec){.x = x, .y = y},
-                      texture_size_px);
+            draw_tile(desc, (board_vec){.x = x, .y = y}, texture_size_px);
         }
     }
 
