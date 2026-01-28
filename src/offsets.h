@@ -12,4 +12,4 @@ typedef struct
 } offsets_global;
 
 offsets_global *offsets_global_allocate();
-void offsets_global_inc(offsets_global *t);
+void offsets_global_increment(offsets_global *t);

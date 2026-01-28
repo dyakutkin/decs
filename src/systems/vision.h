@@ -1,5 +1,7 @@
 #pragma once
 
+#include "stdio.h"
+
 #include "../world.h"
 
 #define VISION_SQUARE_WIDTH 5

@@ -1,4 +1,5 @@
 X(board_situation)
 X(entity_flags)
+X(entity_name)
 X(picked_action)
 X(percepted_events)

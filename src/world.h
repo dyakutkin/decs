@@ -12,7 +12,8 @@
     for (entity _entity = (entity){.idx = 0, .revision = _world->revision[0]}; \
          _entity.idx < _world->len;                                            \
          _entity.idx++, _entity.revision = _world->revision[_entity.idx])
-#define WC(world, entity, component) (&world->component[entity.idx])
+#define WC(world, entity, component)                                           \
+    (valid_entity(world, entity) ? &world->component[entity.idx] : NULL)
 
 typedef struct
 {

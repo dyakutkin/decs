@@ -7,3 +7,5 @@ typedef enum
     DIRECTION_EAST,
     DIRECTION_WEST
 } direction;
+
+char *direction_repr(direction d);

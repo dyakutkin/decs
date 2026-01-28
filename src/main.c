@@ -22,6 +22,14 @@
 #define SCREEN_HEIGHT 1080
 #define SCREEN_TITLE "The Game"
 
+void run_turn(world *w, board *b, offsets_global *og)
+{
+    board_position_update_system(w, b);
+    percepted_events_update_system(w, b);
+
+    offsets_global_increment(og);
+}
+
 int main(void)
 {
     offsets_global *og = offsets_global_allocate();
@@ -37,6 +45,9 @@ int main(void)
     Camera2D camera = {0};
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
+
+    // Initial run.
+    run_turn(w, b, og);
 
     do
     {
@@ -69,10 +80,9 @@ int main(void)
             action action = {.kind = ACTION_MOVE,
                              .payload.direction = direction};
             OPTSET(WC(w, player, picked_action)->action, action);
-        }
 
-        board_position_update_system(w, b);
-        percepted_events_update_system(w, b);
+            run_turn(w, b, og);
+        }
 
         BeginDrawing();
         ClearBackground(RAYWHITE);

@@ -1,6 +1,8 @@
+#include <stdarg.h>
+#include <stdio.h>
+
 #include "board.h"
 #include "offsets.h"
-#include <stdarg.h>
 
 board *board_allocate(offsets_global *og)
 {

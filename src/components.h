@@ -42,3 +42,8 @@ typedef struct
 {
     ALIST(event_broadcast) broadcasts;
 } percepted_events;
+
+typedef struct
+{
+    char *name;
+} entity_name;
