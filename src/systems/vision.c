@@ -146,7 +146,10 @@ void print_event(world *w, event_broadcast eb)
                direction_repr(eb.event.payload.direction.direction));
         return;
     case EVENT_BUMPS:
-        break;
+        printf("%s bumps %s.\n",
+               resolve_entity_name(w, eb.event.subject.entity),
+               direction_repr(eb.event.payload.direction.direction));
+        return;
     }
 }
 

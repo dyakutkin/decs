@@ -30,6 +30,7 @@ typedef struct
 } world;
 
 world *world_allocate(void);
+void world_deallocate(world *w);
 bool create_entity(world *w, entity *entity);
 bool remove_entity(world *w, entity entity);
 bool valid_entity(world *w, entity entity);

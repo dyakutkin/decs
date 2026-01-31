@@ -37,6 +37,7 @@ typedef struct
 } board;
 
 board *board_allocate(offsets_global *og);
+void board_deallocate(board *b);
 bool board_get_tile(board *b, board_vec p, board_tile **out);
 bool board_occupy(board *b, board_vec p, entity e);
 bool board_deoccupy(board *b, board_vec p);

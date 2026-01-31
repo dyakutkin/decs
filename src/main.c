@@ -92,6 +92,10 @@ int main(void)
 
     textures_unload(&t);
 
+    world_deallocate(w);
+    board_deallocate(b);
+    free(og);
+
     CloseWindow();
 
     return 0;

@@ -11,6 +11,16 @@ board *board_allocate(offsets_global *og)
     return b;
 }
 
+void board_deallocate(board *b)
+{
+    for (size_t i = 0; i < BOARD_TILES_AMOUNT; i++)
+    {
+        free(b->tiles[i].ground.items);
+        free(b->tiles[i].event_broadcasts.items);
+    }
+    free(b);
+}
+
 static size_t point_to_idx(board_vec p)
 {
     return p.y * BOARD_SIDE_TILES_AMOUNT + p.x;

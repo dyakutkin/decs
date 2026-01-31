@@ -11,7 +11,7 @@ static void handle_move(board *b, entity e, board_situation *s,
 
     if (!board_occupy(b, new_point, e))
     {
-        event event = {.subject = (event_actor){.entity = e},
+        event event = {.subject = {.entity = e},
                        .kind = EVENT_BUMPS,
                        .payload.direction = {
                            .direction = pa->action.value.payload.direction,
@@ -21,7 +21,7 @@ static void handle_move(board *b, entity e, board_situation *s,
     }
 
     event event = {
-        .subject = (event_actor){.entity = e},
+        .subject = {.entity = e},
         .kind = EVENT_WALKS,
         .payload.direction = {.direction = pa->action.value.payload.direction,
                               .origin = s->point}};
@@ -55,7 +55,7 @@ void board_position_update_system(world *w, board *b)
         }
 
         event event = {
-            .subject = (event_actor){.entity = e},
+            .subject = {.entity = e},
             .kind = EVENT_EXISTS,
         };
         BROADCAST_EVENT(b, event, s->point);

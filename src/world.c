@@ -7,6 +7,15 @@ world *world_allocate(void)
     return w;
 }
 
+void world_deallocate(world *w)
+{
+    for (size_t i = 0; i < MAX_ENTITIES; i++)
+    {
+        free(w->percepted_events[i].broadcasts.items);
+    }
+    free(w);
+}
+
 bool create_entity(world *w, entity *e)
 {
     size_t idx;
