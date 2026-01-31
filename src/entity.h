@@ -1,9 +1,9 @@
 #pragma once
 
-#include "stdlib.h"
 #include <stdint.h>
+#include <stdlib.h>
 
-#define MAX_ENTITIES 1000
+#define MAX_ENTITIES 10000
 
 typedef struct
 {

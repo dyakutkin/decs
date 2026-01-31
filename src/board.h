@@ -21,6 +21,7 @@ typedef struct
     event event;
     turn_id turn;
     size_t offset;
+    board_vec origin;
 } event_broadcast;
 
 typedef struct

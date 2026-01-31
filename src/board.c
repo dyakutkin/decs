@@ -82,25 +82,6 @@ bool board_deoccupy(board *b, board_vec p)
     return true;
 }
 
-void _board_broadcast_event(board *b, event e, board_vec *points,
-                            size_t points_len)
-{
-    for (size_t i = 0; i < points_len; i++)
-    {
-        board_tile *tile;
-        if (!board_get_tile(b, points[i], &tile))
-        {
-            continue;
-        }
-
-        // TODO: come up with events cleaning up strategy (e.g. using ring
-        // buffer instead of dynamic array for board tiles' event broadcasts).
-        AAPPEND(tile->event_broadcasts,
-                ((event_broadcast){.event = e, .offset = b->og->events}));
-        b->og->events++;
-    }
-}
-
 void board_broadcast_event(board *b, event e, ...)
 {
     va_list ap;
@@ -125,7 +106,8 @@ void board_broadcast_event(board *b, event e, ...)
         AAPPEND(tile->event_broadcasts,
                 ((event_broadcast){.event = e,
                                    .offset = b->og->events,
-                                   .turn = b->og->turn_next}));
+                                   .turn = b->og->turn_next,
+                                   .origin = p}));
         b->og->events++;
     }
 

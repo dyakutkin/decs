@@ -5,8 +5,9 @@
 static board_vec traced_tile(int32_t d, int32_t w, board_vec facing,
                              board_vec side, board_vec position)
 {
-    return (board_vec){.x = position.x + facing.x * d + side.x * w,
-                       .y = position.y + facing.y * d + side.y * w};
+    board_vec result = {.x = position.x + facing.x * d + side.x * w,
+                        .y = position.y + facing.y * d + side.y * w};
+    return result;
 }
 
 static bool event_broadcast_is_new(percepted_events *pe, event_broadcast new)
@@ -39,32 +40,32 @@ static bool read_tile_events(percepted_events *pe, board *b, int32_t w,
         return false;
     }
 
-    if (tile->event_broadcasts.len == 0)
+    size_t events_read = 0;
+
+    for (size_t i = 0; i < tile->event_broadcasts.len; i++)
+    {
+        if (tile->event_broadcasts.items[i].turn < b->og->turn_next)
+        {
+            continue;
+        }
+        if (event_broadcast_is_new(pe, tile->event_broadcasts.items[i]))
+        {
+            AAPPEND(pe->broadcasts, tile->event_broadcasts.items[i]);
+            events_read++;
+        }
+    }
+
+    if (events_read == 0)
     {
         AAPPEND(pe->broadcasts,
                 ((event_broadcast){
                     .turn = b->og->turn_next,
                     .event = (event){.kind = EVENT_NOTHING,
-                                     .payload.direction.origin = position}}));
-    }
-    else
-    {
-        printf("Reading %zu events at (%d, %d)\n", tile->event_broadcasts.len,
-               tt.x, tt.y);
-        for (size_t i = 0; i < tile->event_broadcasts.len; i++)
-        {
-            if (tile->event_broadcasts.items[i].turn < b->og->turn_next)
-            {
-                continue;
-            }
-            if (event_broadcast_is_new(pe, tile->event_broadcasts.items[i]))
-            {
-                AAPPEND(pe->broadcasts, tile->event_broadcasts.items[i]);
-            }
-        }
+                                     .payload.direction.origin = position},
+                    .origin = tt}));
     }
 
-    return !tile->occupier.set;
+    return true;
 }
 
 static void cast_depth(percepted_events *pe, board *b, int32_t w,
@@ -92,7 +93,19 @@ static void cast(percepted_events *pe, board *b, board_vec facing_vec,
         s = -1;
     }
 
-    for (int32_t w = s; w < s * VISION_SQUARE_WIDTH / 2 + s; w += s)
+    int32_t w = s;
+    int32_t end = s * VISION_SQUARE_WIDTH / 2 + s;
+
+    while (end - w)
+    {
+        if (read_tile_events(pe, b, w, 0, facing_vec, side, position))
+        {
+            cast_depth(pe, b, w, facing_vec, side, position);
+        }
+        w += s;
+    }
+
+    for (int32_t w = s; w < (s * VISION_SQUARE_WIDTH / 2 + s); w += s)
     {
         if (!read_tile_events(pe, b, w, 0, facing_vec, side, position))
         {

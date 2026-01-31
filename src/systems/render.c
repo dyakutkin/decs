@@ -1,4 +1,5 @@
 #include "render.h"
+#include <stdio.h>
 
 #define TILE_TEXTURE_SIZE 128
 
@@ -22,6 +23,18 @@ static void draw_tile(texture_desc texture_desc, board_vec point,
                        .height = texture_size_px,
                    },
                    (Vector2){.x = 0, .y = 0}, 0, LIGHTGRAY);
+}
+
+static void highlight_tile(board_vec point, Color color, float texture_size_px)
+{
+    DrawRectangleLinesEx(
+        (Rectangle){
+            .x = point.x * texture_size_px,
+            .y = point.y * texture_size_px,
+            .width = texture_size_px,
+            .height = texture_size_px,
+        },
+        3.0f, color);
 }
 
 static texture_desc resolve_texture_desc(textures *t, tile_type tile_type)
@@ -113,6 +126,16 @@ void render_system(Camera2D *camera, textures *t, board *b, world *w,
             texture_desc desc = resolve_texture_desc(t, tile_type);
 
             draw_tile(desc, (board_vec){.x = x, .y = y}, texture_size_px);
+        }
+    }
+
+    percepted_events *pe = WC(w, player, percepted_events);
+    if (pe != NULL)
+    {
+        for (size_t i = 0; i < pe->broadcasts.len; i++)
+        {
+            event_broadcast eb = pe->broadcasts.items[i];
+            highlight_tile(eb.origin, RED, texture_size_px);
         }
     }
 
