@@ -108,8 +108,8 @@ void board_broadcast_event(board *b, event e, ...)
                                    .offset = b->og->events,
                                    .turn = b->og->turn_next,
                                    .origin = p}));
-        b->og->events++;
     }
 
+    b->og->events++;
     va_end(ap);
 }

@@ -1,6 +1,5 @@
 #include "vision.h"
 #include <stdint.h>
-#include <stdlib.h>
 
 static board_vec traced_tile(int32_t d, int32_t w, board_vec facing,
                              board_vec side, board_vec position)
@@ -16,7 +15,7 @@ static bool event_broadcast_is_new(percepted_events *pe, event_broadcast new)
     {
         return true;
     }
-    for (size_t present; present < pe->broadcasts.len; present++)
+    for (size_t present = 0; present < pe->broadcasts.len; present++)
     {
         if (pe->broadcasts.items[present].offset == new.offset &&
             pe->broadcasts.items[present].turn == new.turn)
@@ -115,57 +114,6 @@ static void cast(percepted_events *pe, board *b, board_vec facing_vec,
     }
 }
 
-static char *resolve_entity_name(world *w, entity e)
-{
-    entity_name *en = WC(w, e, entity_name);
-    if (en == NULL || en->name == NULL)
-    {
-        return "Unknown";
-    }
-    return en->name;
-}
-
-void print_event(world *w, event_broadcast eb)
-{
-    switch (eb.event.kind)
-    {
-    case EVENT_NOTHING:
-        return;
-    case EVENT_EXISTS:
-        printf("You see %s.\n",
-               resolve_entity_name(w, eb.event.subject.entity));
-        return;
-    case EVENT_DIES:
-        printf("%s dies.\n", resolve_entity_name(w, eb.event.subject.entity));
-        return;
-    case EVENT_OWNS:
-    case EVENT_COLLECTS:
-        printf("%s collects %s.\n",
-               resolve_entity_name(w, eb.event.subject.entity),
-               resolve_entity_name(w, eb.event.payload.object.entity));
-        return;
-    case EVENT_DROPS:
-        printf("%s drops %s.\n",
-               resolve_entity_name(w, eb.event.subject.entity),
-               resolve_entity_name(w, eb.event.payload.object.entity));
-        return;
-    case EVENT_EATS:
-        printf("%s eats %s.\n", resolve_entity_name(w, eb.event.subject.entity),
-               resolve_entity_name(w, eb.event.payload.object.entity));
-        return;
-    case EVENT_WALKS:
-        printf("%s walks %s.\n",
-               resolve_entity_name(w, eb.event.subject.entity),
-               direction_repr(eb.event.payload.direction.direction));
-        return;
-    case EVENT_BUMPS:
-        printf("%s bumps %s.\n",
-               resolve_entity_name(w, eb.event.subject.entity),
-               direction_repr(eb.event.payload.direction.direction));
-        return;
-    }
-}
-
 void percepted_events_update_system(world *w, board *b)
 {
     ITERW(w, e)
@@ -196,12 +144,5 @@ void percepted_events_update_system(world *w, board *b)
         cast_depth(pe, b, 0, facing_vec, side, s->point);
         cast(pe, b, facing_vec, side, s->point, true);
         cast(pe, b, facing_vec, side, s->point, false);
-
-        printf("----------\n");
-        for (size_t i = 0; i < pe->broadcasts.len; i++)
-        {
-            event_broadcast eb = pe->broadcasts.items[i];
-            print_event(w, eb);
-        }
     }
 }

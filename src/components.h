@@ -7,6 +7,8 @@
 #include "direction.h"
 #include "option.h"
 
+#define ENTITY_NAME_MAX_LENGTH 32
+
 typedef enum
 {
     BOARD_SITUATION_ABSENT,
@@ -45,5 +47,5 @@ typedef struct
 
 typedef struct
 {
-    char *name;
+    char name[ENTITY_NAME_MAX_LENGTH];
 } entity_name;

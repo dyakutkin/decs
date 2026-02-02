@@ -6,6 +6,7 @@
 
 #include "board.h"
 #include "entity.h"
+#include "log.h"
 #include "offsets.h"
 #include "option.h"
 #include "world.h"
@@ -22,10 +23,11 @@
 #define SCREEN_HEIGHT 1080
 #define SCREEN_TITLE "The Game"
 
-void run_turn(world *w, board *b, offsets_global *og)
+void run_turn(world *w, board *b, offsets_global *og, entity player)
 {
     board_position_update_system(w, b);
     percepted_events_update_system(w, b);
+    print_player_percepted_events_system(player, w, og);
 
     offsets_global_increment(og);
 }
@@ -47,7 +49,7 @@ int main(void)
     camera.zoom = 1.0f;
 
     // Initial run.
-    run_turn(w, b, og);
+    run_turn(w, b, og, player);
 
     do
     {
@@ -81,7 +83,7 @@ int main(void)
                              .payload.direction = direction};
             OPTSET(WC(w, player, picked_action)->action, action);
 
-            run_turn(w, b, og);
+            run_turn(w, b, og, player);
         }
 
         BeginDrawing();
