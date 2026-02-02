@@ -26,7 +26,7 @@ static bool event_broadcast_is_new(percepted_events *pe, event_broadcast new)
     return true;
 }
 
-static bool read_tile_events(percepted_events *pe, board *b, int32_t w,
+static bool read_tile_events(percepted_events *pe, board *b, turn *t, int32_t w,
                              int32_t d, board_vec facing_vec, board_vec side,
                              board_vec position)
 {
@@ -43,7 +43,7 @@ static bool read_tile_events(percepted_events *pe, board *b, int32_t w,
 
     for (size_t i = 0; i < tile->event_broadcasts.len; i++)
     {
-        if (tile->event_broadcasts.items[i].turn < b->og->turn_next)
+        if (tile->event_broadcasts.items[i].turn < t->next)
         {
             continue;
         }
@@ -58,7 +58,7 @@ static bool read_tile_events(percepted_events *pe, board *b, int32_t w,
     {
         AAPPEND(pe->broadcasts,
                 ((event_broadcast){
-                    .turn = b->og->turn_next,
+                    .turn = t->next,
                     .event = (event){.kind = EVENT_NOTHING,
                                      .payload.direction.origin = position},
                     .origin = tt}));
@@ -67,19 +67,19 @@ static bool read_tile_events(percepted_events *pe, board *b, int32_t w,
     return true;
 }
 
-static void cast_depth(percepted_events *pe, board *b, int32_t w,
+static void cast_depth(percepted_events *pe, board *b, turn *t, int32_t w,
                        board_vec facing_vec, board_vec side, board_vec position)
 {
     for (size_t d = 0; d < VISION_SQUARE_DEPTH; d++)
     {
-        if (!read_tile_events(pe, b, w, d, facing_vec, side, position))
+        if (!read_tile_events(pe, b, t, w, d, facing_vec, side, position))
         {
             continue;
         }
     }
 }
 
-static void cast(percepted_events *pe, board *b, board_vec facing_vec,
+static void cast(percepted_events *pe, board *b, turn *t, board_vec facing_vec,
                  board_vec side, board_vec position, bool positive)
 {
     int32_t s;
@@ -97,24 +97,24 @@ static void cast(percepted_events *pe, board *b, board_vec facing_vec,
 
     while (end - w)
     {
-        if (read_tile_events(pe, b, w, 0, facing_vec, side, position))
+        if (read_tile_events(pe, b, t, w, 0, facing_vec, side, position))
         {
-            cast_depth(pe, b, w, facing_vec, side, position);
+            cast_depth(pe, b, t, w, facing_vec, side, position);
         }
         w += s;
     }
 
     for (int32_t w = s; w < (s * VISION_SQUARE_WIDTH / 2 + s); w += s)
     {
-        if (!read_tile_events(pe, b, w, 0, facing_vec, side, position))
+        if (!read_tile_events(pe, b, t, w, 0, facing_vec, side, position))
         {
             continue;
         }
-        cast_depth(pe, b, w, facing_vec, side, position);
+        cast_depth(pe, b, t, w, facing_vec, side, position);
     }
 }
 
-void percepted_events_update_system(world *w, board *b)
+void percepted_events_update_system(world *w, board *b, turn *t)
 {
     ITERW(w, e)
     {
@@ -141,8 +141,8 @@ void percepted_events_update_system(world *w, board *b)
         board_vec facing_vec = board_vec_from_direction(s->facing);
         board_vec side = {.x = -facing_vec.y, .y = facing_vec.x};
 
-        cast_depth(pe, b, 0, facing_vec, side, s->point);
-        cast(pe, b, facing_vec, side, s->point, true);
-        cast(pe, b, facing_vec, side, s->point, false);
+        cast_depth(pe, b, t, 0, facing_vec, side, s->point);
+        cast(pe, b, t, facing_vec, side, s->point, true);
+        cast(pe, b, t, facing_vec, side, s->point, false);
     }
 }

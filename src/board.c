@@ -2,12 +2,10 @@
 #include <stdio.h>
 
 #include "board.h"
-#include "offsets.h"
 
-board *board_allocate(offsets_global *og)
+board *board_allocate()
 {
     board *b = calloc(1, sizeof(board));
-    b->og = og;
     return b;
 }
 
@@ -82,7 +80,7 @@ bool board_deoccupy(board *b, board_vec p)
     return true;
 }
 
-void board_broadcast_event(board *b, event e, ...)
+void board_broadcast_event(board *b, turn *t, event e, ...)
 {
     va_list ap;
     va_start(ap, e);
@@ -105,11 +103,12 @@ void board_broadcast_event(board *b, event e, ...)
         // buffer instead of dynamic array for board tiles' event broadcasts).
         AAPPEND(tile->event_broadcasts,
                 ((event_broadcast){.event = e,
-                                   .offset = b->og->events,
-                                   .turn = b->og->turn_next,
+                                   .offset = b->event_offset,
+                                   .turn = t->next,
                                    .origin = p}));
     }
 
-    b->og->events++;
+    b->event_offset++;
     va_end(ap);
 }
+void board_notify_new_turn(board *b) { b->event_offset = 0; }

@@ -7,4 +7,4 @@
 #define VISION_SQUARE_WIDTH 5
 #define VISION_SQUARE_DEPTH VISION_SQUARE_WIDTH
 
-void percepted_events_update_system(world *w, board *b);
+void percepted_events_update_system(world *w, board *b, turn *t);

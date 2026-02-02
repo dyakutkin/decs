@@ -3,7 +3,7 @@
 #include "bvec.h"
 #include "direction.h"
 #include "entity.h"
-#include "offsets.h"
+#include "turn.h"
 
 typedef struct
 {

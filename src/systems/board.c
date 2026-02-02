@@ -1,6 +1,6 @@
 #include "board.h"
 
-static void handle_move(board *b, entity e, board_situation *s,
+static void handle_move(board *b, turn *t, entity e, board_situation *s,
                         picked_action *pa)
 {
     // Update facing regardless of the move success.
@@ -16,7 +16,7 @@ static void handle_move(board *b, entity e, board_situation *s,
                        .payload.direction = {
                            .direction = pa->action.value.payload.direction,
                            .origin = s->point}};
-        BROADCAST_EVENT(b, event, s->point, new_point);
+        BROADCAST_EVENT(b, t, event, s->point, new_point);
         return;
     }
 
@@ -25,7 +25,7 @@ static void handle_move(board *b, entity e, board_situation *s,
         .kind = EVENT_WALKS,
         .payload.direction = {.direction = pa->action.value.payload.direction,
                               .origin = s->point}};
-    BROADCAST_EVENT(b, event, s->point, new_point);
+    BROADCAST_EVENT(b, t, event, s->point, new_point);
 
     assert(board_deoccupy(b, s->point));
     s->type = BOARD_SITUATION_OCCUPIER;
@@ -33,7 +33,7 @@ static void handle_move(board *b, entity e, board_situation *s,
     pa->action.set = false;
 }
 
-void board_position_update_system(world *w, board *b)
+void board_position_update_system(world *w, board *b, turn *t)
 {
     ITERW(w, e)
     {
@@ -51,13 +51,13 @@ void board_position_update_system(world *w, board *b)
         picked_action *pa = WC(w, e, picked_action);
         if (pa->action.set && pa->action.value.kind == ACTION_MOVE)
         {
-            handle_move(b, e, s, pa);
+            handle_move(b, t, e, s, pa);
         }
 
         event event = {
             .subject = {.entity = e},
             .kind = EVENT_EXISTS,
         };
-        BROADCAST_EVENT(b, event, s->point);
+        BROADCAST_EVENT(b, t, event, s->point);
     }
 }
