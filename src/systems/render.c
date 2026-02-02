@@ -89,32 +89,13 @@ void render_system(Camera2D *camera, textures *t, board *b, world *w,
     int top_x = left_upper.x + PLAYER_RENDER_SQUARE_SIDE;
     int top_y = left_upper.y + PLAYER_RENDER_SQUARE_SIDE;
 
+    tile_type tile_type;
+
     for (int x = left_upper.x; x < top_x; x++)
     {
         for (int y = left_upper.y; y < top_y; y++)
         {
-            board_tile *tile;
-            tile_type tile_type;
-
-            if (board_get_tile(b, (board_vec){x, y}, &tile) &&
-                tile->occupier.set && valid_entity(w, tile->occupier.value))
-            {
-                entity_flags *flags = WC(w, player, entity_flags);
-
-                if (FCONTAINS(flags->flags, ENTITY_FLAG_PLAYER))
-                {
-                    tile_type = TILE_TYPE_PLAYER;
-                }
-                else if (FCONTAINS(flags->flags, ENTITY_FLAG_NPC))
-                {
-                    tile_type = TILE_TYPE_NPC;
-                }
-                else
-                {
-                    tile_type = TILE_TYPE_UNKNOWN;
-                }
-            }
-            else if (x < 0 || y < 0)
+            if (x < 0 || y < 0)
             {
                 tile_type = TILE_TYPE_WALL;
             }
@@ -130,11 +111,42 @@ void render_system(Camera2D *camera, textures *t, board *b, world *w,
     }
 
     percepted_events *pe = WC(w, player, percepted_events);
+    entity_flags *flags = WC(w, player, entity_flags);
     if (pe != NULL)
     {
         for (size_t i = 0; i < pe->broadcasts.len; i++)
         {
             event_broadcast eb = pe->broadcasts.items[i];
+            switch (eb.event.kind)
+            {
+            case EVENT_EXISTS:
+                if (FCONTAINS(flags->flags, ENTITY_FLAG_PLAYER))
+                {
+                    tile_type = TILE_TYPE_PLAYER;
+                }
+                else if (FCONTAINS(flags->flags, ENTITY_FLAG_NPC))
+                {
+                    tile_type = TILE_TYPE_NPC;
+                }
+                else
+                {
+                    tile_type = TILE_TYPE_UNKNOWN;
+                }
+                texture_desc desc = resolve_texture_desc(t, tile_type);
+
+                draw_tile(desc, (board_vec){.x = eb.origin.x, .y = eb.origin.y},
+                          texture_size_px);
+                break;
+            case EVENT_NOTHING:
+            case EVENT_DIES:
+            case EVENT_OWNS:
+            case EVENT_COLLECTS:
+            case EVENT_DROPS:
+            case EVENT_EATS:
+            case EVENT_WALKS:
+            case EVENT_BUMPS:
+                break;
+            }
             highlight_tile(eb.origin, RED, texture_size_px);
         }
     }
