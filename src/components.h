@@ -6,6 +6,7 @@
 #include "bvec.h"
 #include "direction.h"
 #include "option.h"
+#include "sprite.h"
 
 #define ENTITY_NAME_MAX_LENGTH 32
 
@@ -49,3 +50,14 @@ typedef struct
 {
     char name[ENTITY_NAME_MAX_LENGTH];
 } entity_name;
+
+typedef struct
+{
+    size_t x;
+    size_t y;
+    sprite_type type;
+    Vector2 position;
+
+    ALIST(sprite_animation) animations;
+    size_t current_anim_idx;
+} entity_sprite;

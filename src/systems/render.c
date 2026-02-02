@@ -6,6 +6,20 @@
 #define PLAYER_RENDER_RADIUS 5
 #define PLAYER_RENDER_SQUARE_SIDE (PLAYER_RENDER_RADIUS * 2 + 1)
 
+render_state *render_state_allocate(textures *t, Camera2D *c)
+{
+    render_state *r = calloc(1, sizeof(render_state));
+    r->camera = c;
+    r->textures = t;
+    return r;
+}
+
+void render_state_deallocate(render_state *r)
+{
+    free(r->actors.items);
+    free(r);
+}
+
 static void draw_tile(texture_desc texture_desc, board_vec point,
                       float texture_size_px)
 {
@@ -37,19 +51,19 @@ static void highlight_tile(board_vec point, Color color, float texture_size_px)
         3.0f, color);
 }
 
-static texture_desc resolve_texture_desc(textures *t, tile_type tile_type)
+static texture_desc resolve_texture_desc(textures *t, sprite_type type)
 {
-    switch (tile_type)
+    switch (type)
     {
-    case TILE_TYPE_PLAYER:
+    case SPRITE_PLAYER:
         return (texture_desc){.texture = &t->chars, .x = 0, .y = 0};
-    case TILE_TYPE_NPC:
+    case SPRITE_NPC:
         return (texture_desc){.texture = &t->chars, .x = 0, .y = 1};
-    case TILE_TYPE_GRASS:
+    case SPRITE_GRASS:
         return (texture_desc){.texture = &t->terrain, .x = 0, .y = 0};
-    case TILE_TYPE_WALL:
+    case SPRITE_WALL:
         return (texture_desc){.texture = &t->terrain, .x = 0, .y = 1};
-    case TILE_TYPE_UNKNOWN:
+    case SPRITE_UNKNOWN:
     default:
         return (texture_desc){.texture = &t->error, .x = 0, .y = 0};
     }
@@ -60,8 +74,7 @@ static float map_tile_size()
     return (float)GetScreenHeight() / PLAYER_RENDER_SQUARE_SIDE;
 }
 
-void render_system(Camera2D *camera, textures *t, board *b, world *w,
-                   entity player)
+void render_system(render_state *r, board *b, world *w, entity player)
 {
     if (!valid_entity(w, player))
     {
@@ -81,15 +94,15 @@ void render_system(Camera2D *camera, textures *t, board *b, world *w,
 
     float texture_size_px = map_tile_size();
 
-    camera->target = (Vector2){left_upper.x * texture_size_px,
-                               left_upper.y * texture_size_px};
+    r->camera->target = (Vector2){left_upper.x * texture_size_px,
+                                  left_upper.y * texture_size_px};
 
-    BeginMode2D(*camera);
+    BeginMode2D(*r->camera);
 
     int top_x = left_upper.x + PLAYER_RENDER_SQUARE_SIDE;
     int top_y = left_upper.y + PLAYER_RENDER_SQUARE_SIDE;
 
-    tile_type tile_type;
+    sprite_type st;
 
     for (int x = left_upper.x; x < top_x; x++)
     {
@@ -97,42 +110,48 @@ void render_system(Camera2D *camera, textures *t, board *b, world *w,
         {
             if (x < 0 || y < 0)
             {
-                tile_type = TILE_TYPE_WALL;
+                st = SPRITE_WALL;
             }
             else
             {
-                tile_type = TILE_TYPE_GRASS;
+                st = SPRITE_GRASS;
             }
 
-            texture_desc desc = resolve_texture_desc(t, tile_type);
+            texture_desc desc = resolve_texture_desc(r->textures, st);
 
             draw_tile(desc, (board_vec){.x = x, .y = y}, texture_size_px);
         }
     }
 
     percepted_events *pe = WC(w, player, percepted_events);
-    entity_flags *flags = WC(w, player, entity_flags);
     if (pe != NULL)
     {
+        entity_sprite *es = NULL;
+        entity_flags *flags = NULL;
+
         for (size_t i = 0; i < pe->broadcasts.len; i++)
         {
             event_broadcast eb = pe->broadcasts.items[i];
+
+            es = WC(w, eb.event.subject.entity, entity_sprite);
+            flags = WC(w, eb.event.subject.entity, entity_flags);
+
             switch (eb.event.kind)
             {
             case EVENT_EXISTS:
                 if (FCONTAINS(flags->flags, ENTITY_FLAG_PLAYER))
                 {
-                    tile_type = TILE_TYPE_PLAYER;
+                    es->type = SPRITE_PLAYER;
                 }
                 else if (FCONTAINS(flags->flags, ENTITY_FLAG_NPC))
                 {
-                    tile_type = TILE_TYPE_NPC;
+                    es->type = SPRITE_NPC;
                 }
                 else
                 {
-                    tile_type = TILE_TYPE_UNKNOWN;
+                    es->type = SPRITE_UNKNOWN;
                 }
-                texture_desc desc = resolve_texture_desc(t, tile_type);
+                texture_desc desc = resolve_texture_desc(r->textures, es->type);
 
                 draw_tile(desc, (board_vec){.x = eb.origin.x, .y = eb.origin.y},
                           texture_size_px);

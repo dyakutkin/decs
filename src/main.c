@@ -49,6 +49,8 @@ int main(void)
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 
+    render_state *r = render_state_allocate(&txtrs, &camera);
+
     // Initial run.
     run_turn(w, b, t, player);
 
@@ -89,10 +91,11 @@ int main(void)
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        render_system(&camera, &txtrs, b, w, player);
+        render_system(r, b, w, player);
         EndDrawing();
     } while (!WindowShouldClose());
 
+    render_state_deallocate(r);
     textures_unload(&txtrs);
 
     world_deallocate(w);

@@ -2,11 +2,14 @@
 
 #include <stdlib.h>
 
+#include "../include/raylib/raylib.h"
+
 #include "../assets/textures.h"
+
+#include "../alist.h"
 #include "../board.h"
 #include "../entity.h"
 #include "../flags.h"
-#include "../include/raylib/raylib.h"
 #include "../world.h"
 
 typedef enum
@@ -25,5 +28,15 @@ typedef struct
     Texture2D *texture;
 } texture_desc;
 
-void render_system(Camera2D *camera, textures *t, board *b, world *w,
-                   entity player);
+typedef struct
+{
+    Camera2D *camera;
+    textures *textures;
+
+    ALIST(entity) actors;
+    entity current_actor;
+} render_state;
+
+render_state *render_state_allocate(textures *t, Camera2D *c);
+void render_state_deallocate(render_state *r);
+void render_system(render_state *r, board *b, world *w, entity player);
