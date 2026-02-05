@@ -53,11 +53,9 @@ typedef struct
 
 typedef struct
 {
-    size_t x;
-    size_t y;
     sprite_type type;
     Vector2 position;
 
     ALIST(sprite_animation) animations;
-    size_t current_anim_idx;
+    size_t current_animation_idx;
 } entity_sprite;

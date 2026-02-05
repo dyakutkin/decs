@@ -17,7 +17,7 @@ typedef enum
 
 typedef enum
 {
-    MOVE = 1,
+    SPRITE_ANIMATION_MOVE = 1,
 } sprite_animation_kind;
 
 typedef struct
@@ -27,6 +27,7 @@ typedef struct
     {
         struct
         {
+            Vector2 target;
         } move;
     } payload;
 } sprite_animation;

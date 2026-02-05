@@ -23,7 +23,7 @@
 #define SCREEN_HEIGHT 1080
 #define SCREEN_TITLE "The Game"
 
-void run_turn(world *w, board *b, turn *t, entity player)
+void run_turn(world *w, board *b, turn *t, entity player, render_state *r)
 {
     board_position_update_system(w, b, t);
     percepted_events_update_system(w, b, t);
@@ -31,6 +31,8 @@ void run_turn(world *w, board *b, turn *t, entity player)
 
     turn_increment(t);
     board_notify_new_turn(b);
+
+    render_state_reinit(r, w, WC(w, player, percepted_events));
 }
 
 int main(void)
@@ -52,7 +54,7 @@ int main(void)
     render_state *r = render_state_allocate(&txtrs, &camera);
 
     // Initial run.
-    run_turn(w, b, t, player);
+    run_turn(w, b, t, player, r);
 
     do
     {
@@ -86,12 +88,12 @@ int main(void)
                              .payload.direction = direction};
             OPTSET(WC(w, player, picked_action)->action, action);
 
-            run_turn(w, b, t, player);
+            run_turn(w, b, t, player, r);
         }
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        render_system(r, b, w, player);
+        render_system(r, w, player);
         EndDrawing();
     } while (!WindowShouldClose());
 

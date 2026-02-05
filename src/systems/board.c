@@ -53,11 +53,13 @@ void board_position_update_system(world *w, board *b, turn *t)
         {
             handle_move(b, t, e, s, pa);
         }
-
-        event event = {
-            .subject = {.entity = e},
-            .kind = EVENT_EXISTS,
-        };
-        BROADCAST_EVENT(b, t, event, s->point);
+        else
+        {
+            event event = {
+                .subject = {.entity = e},
+                .kind = EVENT_EXISTS,
+            };
+            BROADCAST_EVENT(b, t, event, s->point);
+        }
     }
 }

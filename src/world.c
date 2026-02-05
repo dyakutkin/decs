@@ -12,6 +12,7 @@ void world_deallocate(world *w)
     for (size_t i = 0; i < MAX_ENTITIES; i++)
     {
         free(w->percepted_events[i].broadcasts.items);
+        free(w->entity_sprite[i].animations.items);
     }
     free(w);
 }

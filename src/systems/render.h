@@ -1,8 +1,10 @@
 #pragma once
 
+#include <assert.h>
 #include <stdlib.h>
 
 #include "../include/raylib/raylib.h"
+#include "../include/raylib/raymath.h"
 
 #include "../assets/textures.h"
 
@@ -34,9 +36,10 @@ typedef struct
     textures *textures;
 
     ALIST(entity) actors;
-    entity current_actor;
+    size_t current_actor_idx;
 } render_state;
 
 render_state *render_state_allocate(textures *t, Camera2D *c);
 void render_state_deallocate(render_state *r);
-void render_system(render_state *r, board *b, world *w, entity player);
+void render_system(render_state *r, world *w, entity player);
+void render_state_reinit(render_state *r, world *w, percepted_events *pe);

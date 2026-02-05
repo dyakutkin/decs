@@ -1,10 +1,14 @@
 #include "render.h"
+#include <math.h>
 #include <stdio.h>
 
 #define TILE_TEXTURE_SIZE 128
 
 #define PLAYER_RENDER_RADIUS 5
 #define PLAYER_RENDER_SQUARE_SIDE (PLAYER_RENDER_RADIUS * 2 + 1)
+
+#define ANIMATION_MOVE_EPS 0.5f
+#define ANIMATION_MOVE_SPEED 8.0f
 
 render_state *render_state_allocate(textures *t, Camera2D *c)
 {
@@ -20,7 +24,7 @@ void render_state_deallocate(render_state *r)
     free(r);
 }
 
-static void draw_tile(texture_desc texture_desc, board_vec point,
+static void draw_tile(texture_desc texture_desc, Vector2 screen_pos,
                       float texture_size_px)
 {
     DrawTexturePro(*texture_desc.texture,
@@ -31,8 +35,8 @@ static void draw_tile(texture_desc texture_desc, board_vec point,
                        .height = TILE_TEXTURE_SIZE,
                    },
                    (Rectangle){
-                       .x = point.x * texture_size_px,
-                       .y = point.y * texture_size_px,
+                       .x = screen_pos.x,
+                       .y = screen_pos.y,
                        .width = texture_size_px,
                        .height = texture_size_px,
                    },
@@ -74,7 +78,111 @@ static float map_tile_size()
     return (float)GetScreenHeight() / PLAYER_RENDER_SQUARE_SIDE;
 }
 
-void render_system(render_state *r, board *b, world *w, entity player)
+void render_state_reinit(render_state *r, world *w, percepted_events *pe)
+{
+    entity_sprite *es = NULL;
+    entity_flags *flags = NULL;
+
+    ACLEAR(r->actors);
+    r->current_actor_idx = 0;
+
+    for (size_t i = 0; i < pe->broadcasts.len; i++)
+    {
+        event_broadcast eb = pe->broadcasts.items[i];
+        // highlight_tile(eb.origin, RED, map_tile_size());
+
+        if (eb.event.kind == EVENT_NOTHING)
+        {
+            continue;
+        }
+
+        es = WC(w, eb.event.subject.entity, entity_sprite);
+        flags = WC(w, eb.event.subject.entity, entity_flags);
+
+        ACLEAR(es->animations);
+        es->current_animation_idx = 0;
+
+        if (FCONTAINS(flags->flags, ENTITY_FLAG_PLAYER))
+        {
+            es->type = SPRITE_PLAYER;
+        }
+        else if (FCONTAINS(flags->flags, ENTITY_FLAG_NPC))
+        {
+            es->type = SPRITE_NPC;
+        }
+        else
+        {
+            es->type = SPRITE_UNKNOWN;
+        }
+
+        es->position = (Vector2){.x = eb.origin.x * map_tile_size(),
+                                 .y = eb.origin.y * map_tile_size()};
+        AAPPEND(r->actors, eb.event.subject.entity);
+
+        switch (eb.event.kind)
+        {
+        case EVENT_EXISTS:
+            break;
+        case EVENT_WALKS:
+            es->position = (Vector2){
+                .x = eb.event.payload.direction.origin.x * map_tile_size(),
+                .y = eb.event.payload.direction.origin.y * map_tile_size()};
+            AAPPEND(es->animations,
+                    ((sprite_animation){
+                        .kind = SPRITE_ANIMATION_MOVE,
+                        .payload.move.target = (Vector2){
+                            .x = (eb.event.payload.direction.origin.x +
+                                  board_vec_from_direction(
+                                      eb.event.payload.direction.direction)
+                                      .x) *
+                                 map_tile_size(),
+                            .y = (eb.event.payload.direction.origin.y +
+                                  board_vec_from_direction(
+                                      eb.event.payload.direction.direction)
+                                      .y) *
+                                 map_tile_size()}}));
+            break;
+        case EVENT_BUMPS:
+            es->position = (Vector2){
+                .x = eb.event.payload.direction.origin.x * map_tile_size(),
+                .y = eb.event.payload.direction.origin.y * map_tile_size()};
+            AAPPEND(es->animations,
+                    ((sprite_animation){
+                        .kind = SPRITE_ANIMATION_MOVE,
+                        .payload.move.target = (Vector2){
+                            .x = (eb.event.payload.direction.origin.x +
+                                  board_vec_from_direction(
+                                      eb.event.payload.direction.direction)
+                                      .x) *
+                                 map_tile_size(),
+                            .y = (eb.event.payload.direction.origin.y +
+                                  board_vec_from_direction(
+                                      eb.event.payload.direction.direction)
+                                      .y) *
+                                 map_tile_size()}}));
+            AAPPEND(es->animations,
+                    ((sprite_animation){
+                        .kind = SPRITE_ANIMATION_MOVE,
+                        .payload.move.target =
+                            (Vector2){.x = eb.event.payload.direction.origin.x *
+                                           map_tile_size(),
+                                      .y = eb.event.payload.direction.origin.y *
+                                           map_tile_size()}}));
+            break;
+        case EVENT_DIES:
+        case EVENT_OWNS:
+        case EVENT_COLLECTS:
+        case EVENT_DROPS:
+        case EVENT_EATS:
+        case EVENT_NOTHING:
+            // Unreachable branch;
+            assert(false);
+            break;
+        }
+    }
+}
+
+void render_system(render_state *r, world *w, entity player)
 {
     if (!valid_entity(w, player))
     {
@@ -119,55 +227,52 @@ void render_system(render_state *r, board *b, world *w, entity player)
 
             texture_desc desc = resolve_texture_desc(r->textures, st);
 
-            draw_tile(desc, (board_vec){.x = x, .y = y}, texture_size_px);
+            draw_tile(
+                desc,
+                (Vector2){.x = x * map_tile_size(), .y = y * map_tile_size()},
+                texture_size_px);
         }
     }
 
-    percepted_events *pe = WC(w, player, percepted_events);
-    if (pe != NULL)
+    if (r->current_actor_idx < r->actors.len)
     {
-        entity_sprite *es = NULL;
-        entity_flags *flags = NULL;
+        entity current_actor = r->actors.items[r->current_actor_idx];
+        entity_sprite *es = WC(w, current_actor, entity_sprite);
 
-        for (size_t i = 0; i < pe->broadcasts.len; i++)
+        if (es->current_animation_idx < es->animations.len)
         {
-            event_broadcast eb = pe->broadcasts.items[i];
+            sprite_animation current_animation =
+                es->animations.items[es->current_animation_idx];
 
-            es = WC(w, eb.event.subject.entity, entity_sprite);
-            flags = WC(w, eb.event.subject.entity, entity_flags);
-
-            switch (eb.event.kind)
+            switch (current_animation.kind)
             {
-            case EVENT_EXISTS:
-                if (FCONTAINS(flags->flags, ENTITY_FLAG_PLAYER))
+            case SPRITE_ANIMATION_MOVE:
+                es->position = Vector2Lerp(
+                    es->position, current_animation.payload.move.target,
+                    1.0f - expf(-ANIMATION_MOVE_SPEED * GetFrameTime()));
+                if (Vector2Distance(es->position,
+                                    current_animation.payload.move.target) <=
+                    ANIMATION_MOVE_EPS)
                 {
-                    es->type = SPRITE_PLAYER;
+                    es->current_animation_idx++;
                 }
-                else if (FCONTAINS(flags->flags, ENTITY_FLAG_NPC))
-                {
-                    es->type = SPRITE_NPC;
-                }
-                else
-                {
-                    es->type = SPRITE_UNKNOWN;
-                }
-                texture_desc desc = resolve_texture_desc(r->textures, es->type);
-
-                draw_tile(desc, (board_vec){.x = eb.origin.x, .y = eb.origin.y},
-                          texture_size_px);
-                break;
-            case EVENT_NOTHING:
-            case EVENT_DIES:
-            case EVENT_OWNS:
-            case EVENT_COLLECTS:
-            case EVENT_DROPS:
-            case EVENT_EATS:
-            case EVENT_WALKS:
-            case EVENT_BUMPS:
                 break;
             }
-            highlight_tile(eb.origin, RED, texture_size_px);
         }
+        else
+        {
+            r->current_actor_idx++;
+        }
+    }
+
+    for (size_t i = 0; i < r->actors.len; i++)
+    {
+        entity actor = r->actors.items[i];
+        entity_sprite *actor_sprite = WC(w, actor, entity_sprite);
+        texture_desc desc =
+            resolve_texture_desc(r->textures, actor_sprite->type);
+
+        draw_tile(desc, actor_sprite->position, texture_size_px);
     }
 
     EndMode2D();
