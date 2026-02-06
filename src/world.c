@@ -1,5 +1,6 @@
 #include "world.h"
 #include "entity.h"
+#include <stdlib.h>
 
 world *world_allocate(void)
 {

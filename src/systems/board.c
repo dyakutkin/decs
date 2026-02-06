@@ -27,10 +27,13 @@ static void handle_move(board *b, turn *t, entity e, board_situation *s,
                               .origin = s->point}};
     BROADCAST_EVENT(b, t, event, s->point, new_point);
 
-    assert(board_deoccupy(b, s->point));
+    if (!board_deoccupy(b, s->point))
+    {
+        fprintf(stderr, "Invalid board state\n");
+        abort();
+    }
     s->type = BOARD_SITUATION_OCCUPIER;
     s->point = new_point;
-    pa->action.set = false;
 }
 
 void board_position_update_system(world *w, board *b, turn *t)
@@ -52,6 +55,7 @@ void board_position_update_system(world *w, board *b, turn *t)
         if (pa->action.set && pa->action.value.kind == ACTION_MOVE)
         {
             handle_move(b, t, e, s, pa);
+            pa->action.set = false;
         }
         else
         {

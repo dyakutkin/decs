@@ -8,6 +8,8 @@
 #include "components.h"
 #include "entity.h"
 
+#define MAX_ENTITIES 10000000
+
 #define ITERW(_world, _entity)                                                 \
     for (entity _entity = (entity){.idx = 0, .revision = _world->revision[0]}; \
          _entity.idx < _world->len;                                            \

@@ -1,16 +1,4 @@
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "direction.h"
-#include "flags.h"
-
-#include "board.h"
-#include "components.h"
 #include "setup.h"
-#include "world.h"
-
-#define BASE_HUMANOID_ENTITY_FLAGS ENTITY_FLAG_VISION
 
 static bool place_entity_on_board(entity entity, ivec2 point, world *w,
                                   board *b)
@@ -36,19 +24,36 @@ static bool place_entity_on_board(entity entity, ivec2 point, world *w,
 entity setup_actors(world *w, board *b)
 {
 
-    entity player;
+    entity player = {0};
 
-    assert(create_entity(w, &player));
-    assert(place_entity_on_board(player, (ivec2){0, 0}, w, b));
+    if (!create_entity(w, &player))
+    {
+        fprintf(stderr, "Failed to create player\n");
+        abort();
+    }
+    if (!place_entity_on_board(player, (ivec2){0, 0}, w, b))
+    {
+        fprintf(stderr, "Failed to place player on board\n");
+        abort();
+    }
     FSET(WC(w, player, entity_flags)->flags,
          BASE_HUMANOID_ENTITY_FLAGS | ENTITY_FLAG_PLAYER);
     strcpy(WC(w, player, entity_name)->name, "Player");
 
-    for (size_t i = 1; i <= 100; i++)
+    for (size_t i = 1; i <= 1000; i++)
     {
         entity npc;
-        assert(create_entity(w, &npc));
-        assert(place_entity_on_board(npc, (ivec2){i, i}, w, b));
+        if (!create_entity(w, &npc))
+        {
+            fprintf(stderr, "NPC setup failed\n");
+            abort();
+        }
+        if (!place_entity_on_board(npc, (ivec2){i % 5000, i / 5000}, w, b))
+        // if (!place_entity_on_board(npc, (ivec2){i, i}, w, b))
+        {
+            fprintf(stderr, "NPC setup failed\n");
+            abort();
+        }
         FSET(WC(w, npc, entity_flags)->flags,
              BASE_HUMANOID_ENTITY_FLAGS | ENTITY_FLAG_NPC);
         sprintf(WC(w, npc, entity_name)->name, "NPC#%zu", i);

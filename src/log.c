@@ -51,9 +51,10 @@ static void print_event(world *w, event_broadcast eb)
                direction_repr(eb.event.value.payload.direction.direction));
         return;
     case EVENT_BUMPS:
-        printf("%s bumps %s.\n",
+        printf("%s bumps %s on Turn #%zu (offset %zu)\n",
                resolve_entity_name(w, eb.event.value.subject.entity),
-               direction_repr(eb.event.value.payload.direction.direction));
+               direction_repr(eb.event.value.payload.direction.direction),
+               eb.turn, eb.offset);
         return;
     }
 }

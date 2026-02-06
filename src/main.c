@@ -1,5 +1,3 @@
-#include <assert.h>
-
 #include "actions.h"
 #include "direction.h"
 #include "include/raylib/raylib.h"

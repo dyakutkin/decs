@@ -1,6 +1,6 @@
 #pragma once
 
-#include <assert.h>
+#include <stdio.h>
 
 #include "../board.h"
 #include "../entity.h"
