@@ -13,8 +13,6 @@ typedef struct
 
 typedef enum
 {
-    EVENT_NOTHING,
-
     // "subject" events (no payload).
     EVENT_EXISTS = 100,
     EVENT_DIES,

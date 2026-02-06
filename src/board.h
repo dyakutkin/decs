@@ -3,12 +3,12 @@
 #include <stdarg.h>
 
 #include "alist.h"
-#include "ivec2.h"
 #include "entity.h"
 #include "events.h"
 #include "flags.h"
-#include "turn.h"
+#include "ivec2.h"
 #include "option.h"
+#include "turn.h"
 
 #define BOARD_SIDE_TILES_AMOUNT 5000
 #define BOARD_TILES_AMOUNT (BOARD_SIDE_TILES_AMOUNT * BOARD_SIDE_TILES_AMOUNT)
@@ -19,7 +19,7 @@
 
 typedef struct
 {
-    event event;
+    OPT(event) event;
     turn_id turn;
     size_t offset;
     ivec2 origin;

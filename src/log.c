@@ -13,42 +13,47 @@ static char *resolve_entity_name(world *w, entity e)
 
 static void print_event(world *w, event_broadcast eb)
 {
-    switch (eb.event.kind)
+    if (!eb.event.set)
     {
-    case EVENT_NOTHING:
         return;
+    }
+
+    switch (eb.event.value.kind)
+    {
     case EVENT_EXISTS:
         printf("You see %s. at (%d, %d) on Turn #%zu (offset %zu)\n",
-               resolve_entity_name(w, eb.event.subject.entity), eb.origin.x,
-               eb.origin.y, eb.turn, eb.offset);
+               resolve_entity_name(w, eb.event.value.subject.entity),
+               eb.origin.x, eb.origin.y, eb.turn, eb.offset);
         return;
     case EVENT_DIES:
-        printf("%s dies.\n", resolve_entity_name(w, eb.event.subject.entity));
+        printf("%s dies.\n",
+               resolve_entity_name(w, eb.event.value.subject.entity));
         return;
     case EVENT_OWNS:
     case EVENT_COLLECTS:
         printf("%s collects %s.\n",
-               resolve_entity_name(w, eb.event.subject.entity),
-               resolve_entity_name(w, eb.event.payload.object.entity));
+               resolve_entity_name(w, eb.event.value.subject.entity),
+               resolve_entity_name(w, eb.event.value.payload.object.entity));
         return;
     case EVENT_DROPS:
         printf("%s drops %s.\n",
-               resolve_entity_name(w, eb.event.subject.entity),
-               resolve_entity_name(w, eb.event.payload.object.entity));
+               resolve_entity_name(w, eb.event.value.subject.entity),
+               resolve_entity_name(w, eb.event.value.payload.object.entity));
         return;
     case EVENT_EATS:
-        printf("%s eats %s.\n", resolve_entity_name(w, eb.event.subject.entity),
-               resolve_entity_name(w, eb.event.payload.object.entity));
+        printf("%s eats %s.\n",
+               resolve_entity_name(w, eb.event.value.subject.entity),
+               resolve_entity_name(w, eb.event.value.payload.object.entity));
         return;
     case EVENT_WALKS:
         printf("%s walks %s.\n",
-               resolve_entity_name(w, eb.event.subject.entity),
-               direction_repr(eb.event.payload.direction.direction));
+               resolve_entity_name(w, eb.event.value.subject.entity),
+               direction_repr(eb.event.value.payload.direction.direction));
         return;
     case EVENT_BUMPS:
         printf("%s bumps %s.\n",
-               resolve_entity_name(w, eb.event.subject.entity),
-               direction_repr(eb.event.payload.direction.direction));
+               resolve_entity_name(w, eb.event.value.subject.entity),
+               direction_repr(eb.event.value.payload.direction.direction));
         return;
     }
 }

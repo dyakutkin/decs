@@ -102,7 +102,8 @@ void board_broadcast_event(board *b, turn *t, event e, ...)
         // TODO: come up with events cleaning up strategy (e.g. using ring
         // buffer instead of dynamic array for board tiles' event broadcasts).
         AAPPEND(tile->event_broadcasts,
-                ((event_broadcast){.event = e,
+                ((event_broadcast){.event.value = e,
+                                   .event.set = true,
                                    .offset = b->event_offset,
                                    .turn = t->next,
                                    .origin = p}));

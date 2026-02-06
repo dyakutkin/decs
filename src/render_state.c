@@ -36,13 +36,15 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe)
         event_broadcast eb = pe->broadcasts.items[i];
         AAPPEND(r->visible_tiles, eb.origin);
 
-        if (eb.event.kind == EVENT_NOTHING)
+        if (!eb.event.set)
         {
             continue;
         }
 
-        es = WC(w, eb.event.subject.entity, entity_sprite);
-        flags = WC(w, eb.event.subject.entity, entity_flags);
+        event ev = eb.event.value;
+
+        es = WC(w, ev.subject.entity, entity_sprite);
+        flags = WC(w, ev.subject.entity, entity_flags);
 
         ACLEAR(es->animations);
         es->current_animation_idx = 0;
@@ -62,64 +64,62 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe)
 
         es->position = (Vector2){.x = eb.origin.x * r->tile_size_px,
                                  .y = eb.origin.y * r->tile_size_px};
-        AAPPEND(r->actors, eb.event.subject.entity);
+        AAPPEND(r->actors, ev.subject.entity);
 
-        switch (eb.event.kind)
+        switch (ev.kind)
         {
         case EVENT_EXISTS:
             break;
         case EVENT_WALKS:
-            es->position = (Vector2){
-                .x = eb.event.payload.direction.origin.x * r->tile_size_px,
-                .y = eb.event.payload.direction.origin.y * r->tile_size_px};
-            AAPPEND(es->animations,
-                    ((sprite_animation){
-                        .kind = SPRITE_ANIMATION_MOVE,
-                        .payload.move.target = (Vector2){
-                            .x = (eb.event.payload.direction.origin.x +
-                                  ivec2_from_direction(
-                                      eb.event.payload.direction.direction)
-                                      .x) *
-                                 r->tile_size_px,
-                            .y = (eb.event.payload.direction.origin.y +
-                                  ivec2_from_direction(
-                                      eb.event.payload.direction.direction)
-                                      .y) *
-                                 r->tile_size_px}}));
-            break;
-        case EVENT_BUMPS:
-            es->position = (Vector2){
-                .x = eb.event.payload.direction.origin.x * r->tile_size_px,
-                .y = eb.event.payload.direction.origin.y * r->tile_size_px};
-            AAPPEND(es->animations,
-                    ((sprite_animation){
-                        .kind = SPRITE_ANIMATION_MOVE,
-                        .payload.move.target = (Vector2){
-                            .x = (eb.event.payload.direction.origin.x +
-                                  ivec2_from_direction(
-                                      eb.event.payload.direction.direction)
-                                      .x) *
-                                 r->tile_size_px,
-                            .y = (eb.event.payload.direction.origin.y +
-                                  ivec2_from_direction(
-                                      eb.event.payload.direction.direction)
-                                      .y) *
-                                 r->tile_size_px}}));
+            es->position =
+                (Vector2){.x = ev.payload.direction.origin.x * r->tile_size_px,
+                          .y = ev.payload.direction.origin.y * r->tile_size_px};
             AAPPEND(es->animations,
                     ((sprite_animation){
                         .kind = SPRITE_ANIMATION_MOVE,
                         .payload.move.target =
-                            (Vector2){.x = eb.event.payload.direction.origin.x *
+                            (Vector2){.x = (ev.payload.direction.origin.x +
+                                            ivec2_from_direction(
+                                                ev.payload.direction.direction)
+                                                .x) *
                                            r->tile_size_px,
-                                      .y = eb.event.payload.direction.origin.y *
+                                      .y = (ev.payload.direction.origin.y +
+                                            ivec2_from_direction(
+                                                ev.payload.direction.direction)
+                                                .y) *
                                            r->tile_size_px}}));
+            break;
+        case EVENT_BUMPS:
+            es->position =
+                (Vector2){.x = ev.payload.direction.origin.x * r->tile_size_px,
+                          .y = ev.payload.direction.origin.y * r->tile_size_px};
+            AAPPEND(es->animations,
+                    ((sprite_animation){
+                        .kind = SPRITE_ANIMATION_MOVE,
+                        .payload.move.target =
+                            (Vector2){.x = (ev.payload.direction.origin.x +
+                                            ivec2_from_direction(
+                                                ev.payload.direction.direction)
+                                                .x) *
+                                           r->tile_size_px,
+                                      .y = (ev.payload.direction.origin.y +
+                                            ivec2_from_direction(
+                                                ev.payload.direction.direction)
+                                                .y) *
+                                           r->tile_size_px}}));
+            AAPPEND(es->animations,
+                    ((sprite_animation){.kind = SPRITE_ANIMATION_MOVE,
+                                        .payload.move.target = (Vector2){
+                                            .x = ev.payload.direction.origin.x *
+                                                 r->tile_size_px,
+                                            .y = ev.payload.direction.origin.y *
+                                                 r->tile_size_px}}));
             break;
         case EVENT_DIES:
         case EVENT_OWNS:
         case EVENT_COLLECTS:
         case EVENT_DROPS:
         case EVENT_EATS:
-        case EVENT_NOTHING:
             break;
         }
     }

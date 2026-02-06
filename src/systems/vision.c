@@ -11,7 +11,7 @@ static ivec2 traced_tile(int32_t d, int32_t w, ivec2 facing, ivec2 side,
 
 static bool event_broadcast_is_new(percepted_events *pe, event_broadcast new)
 {
-    if (new.event.kind == EVENT_NOTHING)
+    if (!new.event.set)
     {
         return true;
     }
@@ -58,10 +58,7 @@ static bool read_tile_events(percepted_events *pe, board *b, turn *t, int32_t w,
     {
         AAPPEND(pe->broadcasts,
                 ((event_broadcast){
-                    .turn = t->next,
-                    .event = (event){.kind = EVENT_NOTHING,
-                                     .payload.direction.origin = position},
-                    .origin = tt}));
+                    .turn = t->next, .event.set = false, .origin = tt}));
     }
 
     return true;
