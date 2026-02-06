@@ -14,6 +14,7 @@
 #include "assets/textures.h"
 
 #include "systems/board.h"
+#include "systems/npc.h"
 #include "systems/render.h"
 #include "systems/vision.h"
 
@@ -24,6 +25,8 @@
 void run_turn(world *w, board *b, turn *t, entity player, render_state *r)
 {
     double stamp = GetTime();
+
+    npc_behavior_system(w);
 
     board_position_update_system(w, b, t);
     percepted_events_update_system(w, b, t);
