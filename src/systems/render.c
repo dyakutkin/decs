@@ -43,11 +43,11 @@ static texture_desc resolve_texture_desc(textures *t, sprite_type type)
     }
 }
 
-static bool board_vec_is_visible(board_vec vec, render_state *rs)
+static bool ivec2_is_visible(ivec2 vec, render_state *rs)
 {
     for (size_t i = 0; i < rs->visible_tiles.len; i++)
     {
-        if (board_vec_eq(vec, rs->visible_tiles.items[i]))
+        if (ivec2_eq(vec, rs->visible_tiles.items[i]))
         {
             return true;
         }
@@ -55,9 +55,8 @@ static bool board_vec_is_visible(board_vec vec, render_state *rs)
     return false;
 }
 
-void draw_background(board_vec left_upper, int top_x, int top_y,
-                     render_state *r, float tile_size_px,
-                     draw_background_mode mode)
+void draw_background(ivec2 left_upper, int top_x, int top_y, render_state *r,
+                     float tile_size_px, draw_background_mode mode)
 {
     sprite_type st;
 
@@ -65,7 +64,7 @@ void draw_background(board_vec left_upper, int top_x, int top_y,
     {
         for (int y = left_upper.y; y < top_y; y++)
         {
-            bool visible = board_vec_is_visible((board_vec){x, y}, r);
+            bool visible = ivec2_is_visible((ivec2){x, y}, r);
             if (!visible && (mode == DRAW_BACKGROUND_VISIBLE))
             {
                 continue;
@@ -110,9 +109,9 @@ void render_system(render_state *r, world *w, entity player)
     {
         return;
     }
-    board_vec player_pos = situation->point;
+    ivec2 player_pos = situation->point;
 
-    board_vec left_upper = {
+    ivec2 left_upper = {
         .x = player_pos.x - PLAYER_RENDER_RADIUS,
         .y = player_pos.y - PLAYER_RENDER_RADIUS,
     };

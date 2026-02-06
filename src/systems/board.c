@@ -6,8 +6,8 @@ static void handle_move(board *b, turn *t, entity e, board_situation *s,
     // Update facing regardless of the move success.
     s->facing = pa->action.value.payload.direction;
 
-    board_vec new_point = board_vec_add(
-        s->point, board_vec_from_direction(pa->action.value.payload.direction));
+    ivec2 new_point = ivec2_add(
+        s->point, ivec2_from_direction(pa->action.value.payload.direction));
 
     if (!board_occupy(b, new_point, e))
     {

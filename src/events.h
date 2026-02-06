@@ -1,8 +1,8 @@
 #pragma once
 
-#include "bvec.h"
 #include "direction.h"
 #include "entity.h"
+#include "ivec2.h"
 #include "turn.h"
 
 typedef struct
@@ -46,7 +46,7 @@ typedef struct
         struct
         {
             direction direction;
-            board_vec origin;
+            ivec2 origin;
         } direction;
         enum event_status status;
     } payload;

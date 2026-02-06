@@ -3,8 +3,8 @@
 #include "actions.h"
 #include "alist.h"
 #include "board.h"
-#include "bvec.h"
 #include "direction.h"
+#include "ivec2.h"
 #include "option.h"
 #include "sprite.h"
 
@@ -20,7 +20,7 @@ typedef enum
 typedef struct
 {
     board_situation_type type;
-    board_vec point;
+    ivec2 point;
     direction facing;
 } board_situation;
 

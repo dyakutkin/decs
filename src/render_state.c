@@ -77,12 +77,12 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe)
                         .kind = SPRITE_ANIMATION_MOVE,
                         .payload.move.target = (Vector2){
                             .x = (eb.event.payload.direction.origin.x +
-                                  board_vec_from_direction(
+                                  ivec2_from_direction(
                                       eb.event.payload.direction.direction)
                                       .x) *
                                  r->tile_size_px,
                             .y = (eb.event.payload.direction.origin.y +
-                                  board_vec_from_direction(
+                                  ivec2_from_direction(
                                       eb.event.payload.direction.direction)
                                       .y) *
                                  r->tile_size_px}}));
@@ -96,12 +96,12 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe)
                         .kind = SPRITE_ANIMATION_MOVE,
                         .payload.move.target = (Vector2){
                             .x = (eb.event.payload.direction.origin.x +
-                                  board_vec_from_direction(
+                                  ivec2_from_direction(
                                       eb.event.payload.direction.direction)
                                       .x) *
                                  r->tile_size_px,
                             .y = (eb.event.payload.direction.origin.y +
-                                  board_vec_from_direction(
+                                  ivec2_from_direction(
                                       eb.event.payload.direction.direction)
                                       .y) *
                                  r->tile_size_px}}));

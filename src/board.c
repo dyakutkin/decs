@@ -19,12 +19,12 @@ void board_deallocate(board *b)
     free(b);
 }
 
-static size_t point_to_idx(board_vec p)
+static size_t point_to_idx(ivec2 p)
 {
     return p.y * BOARD_SIDE_TILES_AMOUNT + p.x;
 }
 
-static bool is_valid_board_tile(board_vec p)
+static bool is_valid_board_tile(ivec2 p)
 {
     if (p.x < 0 || p.y < 0)
     {
@@ -34,7 +34,7 @@ static bool is_valid_board_tile(board_vec p)
     return idx < BOARD_TILES_AMOUNT;
 }
 
-bool board_get_tile(board *b, board_vec p, board_tile **out)
+bool board_get_tile(board *b, ivec2 p, board_tile **out)
 {
     if (!is_valid_board_tile(p))
     {
@@ -47,7 +47,7 @@ bool board_get_tile(board *b, board_vec p, board_tile **out)
     return true;
 }
 
-bool board_occupy(board *b, board_vec p, entity e)
+bool board_occupy(board *b, ivec2 p, entity e)
 {
     board_tile *tile;
     if (!board_get_tile(b, p, &tile))
@@ -64,7 +64,7 @@ bool board_occupy(board *b, board_vec p, entity e)
     return true;
 }
 
-bool board_deoccupy(board *b, board_vec p)
+bool board_deoccupy(board *b, ivec2 p)
 {
     board_tile *tile;
     if (!board_get_tile(b, p, &tile))
@@ -87,7 +87,7 @@ void board_broadcast_event(board *b, turn *t, event e, ...)
 
     for (;;)
     {
-        board_vec p = va_arg(ap, board_vec);
+        ivec2 p = va_arg(ap, ivec2);
         if (p.x < 0 || p.y < 0)
         {
             break;
