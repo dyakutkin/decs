@@ -2,21 +2,17 @@
 
 char *direction_repr(direction d)
 {
-    char *result;
     switch (d)
     {
     case DIRECTION_NORTH:
-        result = "north";
-        break;
+        return "north";
     case DIRECTION_SOUTH:
-        result = "south";
-        break;
+        return "south";
     case DIRECTION_EAST:
-        result = "east";
-        break;
+        return "east";
     case DIRECTION_WEST:
-        result = "west";
-        break;
+        return "west";
     }
-    return result;
+    fprintf(stderr, "Invalid direction\n");
+    abort();
 }

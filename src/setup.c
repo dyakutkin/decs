@@ -48,15 +48,20 @@ entity setup_actors(world *w, board *b)
             fprintf(stderr, "NPC setup failed\n");
             abort();
         }
-        if (!place_entity_on_board(npc, (ivec2){i % 5000, i / 5000}, w, b))
-        // if (!place_entity_on_board(npc, (ivec2){i, i}, w, b))
+        if (!place_entity_on_board(npc, (ivec2){i, i}, w, b))
         {
             fprintf(stderr, "NPC setup failed\n");
             abort();
         }
         FSET(WC(w, npc, entity_flags)->flags,
              BASE_HUMANOID_ENTITY_FLAGS | ENTITY_FLAG_NPC);
-        sprintf(WC(w, npc, entity_name)->name, "NPC#%zu", i);
+        entity_name *en = WC(w, npc, entity_name);
+        if (en == NULL)
+        {
+            fprintf(stderr, "NPC setup failed\n");
+            abort();
+        }
+        sprintf(en->name, "NPC#%zu", i);
     }
 
     return player;
