@@ -16,6 +16,12 @@
 
 typedef enum
 {
+    DRAW_BACKGROUND_VISIBLE,
+    DRAW_BACKGROUND_NON_VISIBLE,
+} draw_background_mode;
+
+typedef enum
+{
     TILE_TYPE_UNKNOWN,
     TILE_TYPE_GRASS,
     TILE_TYPE_WALL,
@@ -37,6 +43,8 @@ typedef struct
 
     ALIST(entity) actors;
     size_t current_actor_idx;
+
+    ALIST(board_vec) visible_tiles;
 } render_state;
 
 render_state *render_state_allocate(textures *t, Camera2D *c);

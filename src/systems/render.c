@@ -21,6 +21,7 @@ render_state *render_state_allocate(textures *t, Camera2D *c)
 void render_state_deallocate(render_state *r)
 {
     free(r->actors.items);
+    free(r->visible_tiles.items);
     free(r);
 }
 
@@ -40,19 +41,7 @@ static void draw_tile(texture_desc texture_desc, Vector2 screen_pos,
                        .width = texture_size_px,
                        .height = texture_size_px,
                    },
-                   (Vector2){.x = 0, .y = 0}, 0, LIGHTGRAY);
-}
-
-static void highlight_tile(board_vec point, Color color, float texture_size_px)
-{
-    DrawRectangleLinesEx(
-        (Rectangle){
-            .x = point.x * texture_size_px,
-            .y = point.y * texture_size_px,
-            .width = texture_size_px,
-            .height = texture_size_px,
-        },
-        3.0f, color);
+                   (Vector2){.x = 0, .y = 0}, 0, RAYWHITE);
 }
 
 static texture_desc resolve_texture_desc(textures *t, sprite_type type)
@@ -78,18 +67,33 @@ static float map_tile_size()
     return (float)GetScreenHeight() / PLAYER_RENDER_SQUARE_SIDE;
 }
 
+static bool board_vec_is_visible(board_vec vec, render_state *rs)
+{
+    for (size_t i = 0; i < rs->visible_tiles.len; i++)
+    {
+        if (board_vec_eq(vec, rs->visible_tiles.items[i]))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void render_state_reinit(render_state *r, world *w, percepted_events *pe)
 {
+    float tile_size_px = map_tile_size();
+
     entity_sprite *es = NULL;
     entity_flags *flags = NULL;
 
     ACLEAR(r->actors);
     r->current_actor_idx = 0;
+    ACLEAR(r->visible_tiles);
 
     for (size_t i = 0; i < pe->broadcasts.len; i++)
     {
         event_broadcast eb = pe->broadcasts.items[i];
-        // highlight_tile(eb.origin, RED, map_tile_size());
+        AAPPEND(r->visible_tiles, eb.origin);
 
         if (eb.event.kind == EVENT_NOTHING)
         {
@@ -115,8 +119,8 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe)
             es->type = SPRITE_UNKNOWN;
         }
 
-        es->position = (Vector2){.x = eb.origin.x * map_tile_size(),
-                                 .y = eb.origin.y * map_tile_size()};
+        es->position = (Vector2){.x = eb.origin.x * tile_size_px,
+                                 .y = eb.origin.y * tile_size_px};
         AAPPEND(r->actors, eb.event.subject.entity);
 
         switch (eb.event.kind)
@@ -125,8 +129,8 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe)
             break;
         case EVENT_WALKS:
             es->position = (Vector2){
-                .x = eb.event.payload.direction.origin.x * map_tile_size(),
-                .y = eb.event.payload.direction.origin.y * map_tile_size()};
+                .x = eb.event.payload.direction.origin.x * tile_size_px,
+                .y = eb.event.payload.direction.origin.y * tile_size_px};
             AAPPEND(es->animations,
                     ((sprite_animation){
                         .kind = SPRITE_ANIMATION_MOVE,
@@ -135,17 +139,17 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe)
                                   board_vec_from_direction(
                                       eb.event.payload.direction.direction)
                                       .x) *
-                                 map_tile_size(),
+                                 tile_size_px,
                             .y = (eb.event.payload.direction.origin.y +
                                   board_vec_from_direction(
                                       eb.event.payload.direction.direction)
                                       .y) *
-                                 map_tile_size()}}));
+                                 tile_size_px}}));
             break;
         case EVENT_BUMPS:
             es->position = (Vector2){
-                .x = eb.event.payload.direction.origin.x * map_tile_size(),
-                .y = eb.event.payload.direction.origin.y * map_tile_size()};
+                .x = eb.event.payload.direction.origin.x * tile_size_px,
+                .y = eb.event.payload.direction.origin.y * tile_size_px};
             AAPPEND(es->animations,
                     ((sprite_animation){
                         .kind = SPRITE_ANIMATION_MOVE,
@@ -154,20 +158,20 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe)
                                   board_vec_from_direction(
                                       eb.event.payload.direction.direction)
                                       .x) *
-                                 map_tile_size(),
+                                 tile_size_px,
                             .y = (eb.event.payload.direction.origin.y +
                                   board_vec_from_direction(
                                       eb.event.payload.direction.direction)
                                       .y) *
-                                 map_tile_size()}}));
-            AAPPEND(es->animations,
-                    ((sprite_animation){
-                        .kind = SPRITE_ANIMATION_MOVE,
-                        .payload.move.target =
-                            (Vector2){.x = eb.event.payload.direction.origin.x *
-                                           map_tile_size(),
-                                      .y = eb.event.payload.direction.origin.y *
-                                           map_tile_size()}}));
+                                 tile_size_px}}));
+            AAPPEND(
+                es->animations,
+                ((sprite_animation){
+                    .kind = SPRITE_ANIMATION_MOVE,
+                    .payload.move.target = (Vector2){
+                        .x = eb.event.payload.direction.origin.x * tile_size_px,
+                        .y = eb.event.payload.direction.origin.y *
+                             tile_size_px}}));
             break;
         case EVENT_DIES:
         case EVENT_OWNS:
@@ -175,9 +179,51 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe)
         case EVENT_DROPS:
         case EVENT_EATS:
         case EVENT_NOTHING:
-            // Unreachable branch;
-            assert(false);
             break;
+        }
+    }
+}
+
+void draw_background(board_vec left_upper, int top_x, int top_y,
+                     render_state *r, float tile_size_px,
+                     draw_background_mode mode)
+{
+    sprite_type st;
+
+    for (int x = left_upper.x; x < top_x; x++)
+    {
+        for (int y = left_upper.y; y < top_y; y++)
+        {
+            bool visible = board_vec_is_visible((board_vec){x, y}, r);
+            if (!visible && (mode == DRAW_BACKGROUND_VISIBLE))
+            {
+                continue;
+            }
+            if (visible && (mode == DRAW_BACKGROUND_NON_VISIBLE))
+            {
+                continue;
+            }
+
+            if (x < 0 || y < 0)
+            {
+                st = SPRITE_WALL;
+            }
+            else
+            {
+                st = SPRITE_GRASS;
+            }
+
+            texture_desc desc = resolve_texture_desc(r->textures, st);
+
+            draw_tile(desc,
+                      (Vector2){.x = x * tile_size_px, .y = y * tile_size_px},
+                      tile_size_px);
+            if (mode == DRAW_BACKGROUND_NON_VISIBLE)
+                DrawRectanglePro((Rectangle){.x = x * tile_size_px,
+                                             .y = y * tile_size_px,
+                                             .width = tile_size_px,
+                                             .height = tile_size_px},
+                                 (Vector2){0}, 0, Fade(BLACK, 0.5f));
         }
     }
 }
@@ -200,39 +246,18 @@ void render_system(render_state *r, world *w, entity player)
         .y = player_pos.y - PLAYER_RENDER_RADIUS,
     };
 
-    float texture_size_px = map_tile_size();
+    float tile_size_px = map_tile_size();
 
-    r->camera->target = (Vector2){left_upper.x * texture_size_px,
-                                  left_upper.y * texture_size_px};
+    r->camera->target =
+        (Vector2){left_upper.x * tile_size_px, left_upper.y * tile_size_px};
 
     BeginMode2D(*r->camera);
 
     int top_x = left_upper.x + PLAYER_RENDER_SQUARE_SIDE;
     int top_y = left_upper.y + PLAYER_RENDER_SQUARE_SIDE;
 
-    sprite_type st;
-
-    for (int x = left_upper.x; x < top_x; x++)
-    {
-        for (int y = left_upper.y; y < top_y; y++)
-        {
-            if (x < 0 || y < 0)
-            {
-                st = SPRITE_WALL;
-            }
-            else
-            {
-                st = SPRITE_GRASS;
-            }
-
-            texture_desc desc = resolve_texture_desc(r->textures, st);
-
-            draw_tile(
-                desc,
-                (Vector2){.x = x * map_tile_size(), .y = y * map_tile_size()},
-                texture_size_px);
-        }
-    }
+    draw_background(left_upper, top_x, top_y, r, tile_size_px,
+                    DRAW_BACKGROUND_VISIBLE);
 
     if (r->current_actor_idx < r->actors.len)
     {
@@ -272,8 +297,11 @@ void render_system(render_state *r, world *w, entity player)
         texture_desc desc =
             resolve_texture_desc(r->textures, actor_sprite->type);
 
-        draw_tile(desc, actor_sprite->position, texture_size_px);
+        draw_tile(desc, actor_sprite->position, tile_size_px);
     }
+
+    draw_background(left_upper, top_x, top_y, r, tile_size_px,
+                    DRAW_BACKGROUND_NON_VISIBLE);
 
     EndMode2D();
 }
