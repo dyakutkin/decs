@@ -25,12 +25,17 @@
 
 void run_turn(world *w, board *b, turn *t, entity player, render_state *r)
 {
+    double stamp = GetTime();
+
     board_position_update_system(w, b, t);
     percepted_events_update_system(w, b, t);
     print_player_percepted_events_system(player, w, t);
 
     turn_increment(t);
     board_notify_new_turn(b);
+
+    stamp = (GetTime() - stamp) * 1000.0;
+    printf("Update took %.3f ms\n", stamp);
 
     render_state_reinit(r, w, WC(w, player, percepted_events));
 }

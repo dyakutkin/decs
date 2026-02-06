@@ -1,29 +1,10 @@
 #include "render.h"
 #include <math.h>
-#include <stdio.h>
 
 #define TILE_TEXTURE_SIZE 128
 
-#define PLAYER_RENDER_RADIUS 5
-#define PLAYER_RENDER_SQUARE_SIDE (PLAYER_RENDER_RADIUS * 2 + 1)
-
 #define ANIMATION_MOVE_EPS 0.5f
 #define ANIMATION_MOVE_SPEED 8.0f
-
-render_state *render_state_allocate(textures *t, Camera2D *c)
-{
-    render_state *r = calloc(1, sizeof(render_state));
-    r->camera = c;
-    r->textures = t;
-    return r;
-}
-
-void render_state_deallocate(render_state *r)
-{
-    free(r->actors.items);
-    free(r->visible_tiles.items);
-    free(r);
-}
 
 static void draw_tile(texture_desc texture_desc, Vector2 screen_pos,
                       float texture_size_px)
@@ -62,11 +43,6 @@ static texture_desc resolve_texture_desc(textures *t, sprite_type type)
     }
 }
 
-static float map_tile_size()
-{
-    return (float)GetScreenHeight() / PLAYER_RENDER_SQUARE_SIDE;
-}
-
 static bool board_vec_is_visible(board_vec vec, render_state *rs)
 {
     for (size_t i = 0; i < rs->visible_tiles.len; i++)
@@ -77,111 +53,6 @@ static bool board_vec_is_visible(board_vec vec, render_state *rs)
         }
     }
     return false;
-}
-
-void render_state_reinit(render_state *r, world *w, percepted_events *pe)
-{
-    float tile_size_px = map_tile_size();
-
-    entity_sprite *es = NULL;
-    entity_flags *flags = NULL;
-
-    ACLEAR(r->actors);
-    r->current_actor_idx = 0;
-    ACLEAR(r->visible_tiles);
-
-    for (size_t i = 0; i < pe->broadcasts.len; i++)
-    {
-        event_broadcast eb = pe->broadcasts.items[i];
-        AAPPEND(r->visible_tiles, eb.origin);
-
-        if (eb.event.kind == EVENT_NOTHING)
-        {
-            continue;
-        }
-
-        es = WC(w, eb.event.subject.entity, entity_sprite);
-        flags = WC(w, eb.event.subject.entity, entity_flags);
-
-        ACLEAR(es->animations);
-        es->current_animation_idx = 0;
-
-        if (FCONTAINS(flags->flags, ENTITY_FLAG_PLAYER))
-        {
-            es->type = SPRITE_PLAYER;
-        }
-        else if (FCONTAINS(flags->flags, ENTITY_FLAG_NPC))
-        {
-            es->type = SPRITE_NPC;
-        }
-        else
-        {
-            es->type = SPRITE_UNKNOWN;
-        }
-
-        es->position = (Vector2){.x = eb.origin.x * tile_size_px,
-                                 .y = eb.origin.y * tile_size_px};
-        AAPPEND(r->actors, eb.event.subject.entity);
-
-        switch (eb.event.kind)
-        {
-        case EVENT_EXISTS:
-            break;
-        case EVENT_WALKS:
-            es->position = (Vector2){
-                .x = eb.event.payload.direction.origin.x * tile_size_px,
-                .y = eb.event.payload.direction.origin.y * tile_size_px};
-            AAPPEND(es->animations,
-                    ((sprite_animation){
-                        .kind = SPRITE_ANIMATION_MOVE,
-                        .payload.move.target = (Vector2){
-                            .x = (eb.event.payload.direction.origin.x +
-                                  board_vec_from_direction(
-                                      eb.event.payload.direction.direction)
-                                      .x) *
-                                 tile_size_px,
-                            .y = (eb.event.payload.direction.origin.y +
-                                  board_vec_from_direction(
-                                      eb.event.payload.direction.direction)
-                                      .y) *
-                                 tile_size_px}}));
-            break;
-        case EVENT_BUMPS:
-            es->position = (Vector2){
-                .x = eb.event.payload.direction.origin.x * tile_size_px,
-                .y = eb.event.payload.direction.origin.y * tile_size_px};
-            AAPPEND(es->animations,
-                    ((sprite_animation){
-                        .kind = SPRITE_ANIMATION_MOVE,
-                        .payload.move.target = (Vector2){
-                            .x = (eb.event.payload.direction.origin.x +
-                                  board_vec_from_direction(
-                                      eb.event.payload.direction.direction)
-                                      .x) *
-                                 tile_size_px,
-                            .y = (eb.event.payload.direction.origin.y +
-                                  board_vec_from_direction(
-                                      eb.event.payload.direction.direction)
-                                      .y) *
-                                 tile_size_px}}));
-            AAPPEND(
-                es->animations,
-                ((sprite_animation){
-                    .kind = SPRITE_ANIMATION_MOVE,
-                    .payload.move.target = (Vector2){
-                        .x = eb.event.payload.direction.origin.x * tile_size_px,
-                        .y = eb.event.payload.direction.origin.y *
-                             tile_size_px}}));
-            break;
-        case EVENT_DIES:
-        case EVENT_OWNS:
-        case EVENT_COLLECTS:
-        case EVENT_DROPS:
-        case EVENT_EATS:
-        case EVENT_NOTHING:
-            break;
-        }
-    }
 }
 
 void draw_background(board_vec left_upper, int top_x, int top_y,
@@ -246,17 +117,15 @@ void render_system(render_state *r, world *w, entity player)
         .y = player_pos.y - PLAYER_RENDER_RADIUS,
     };
 
-    float tile_size_px = map_tile_size();
-
-    r->camera->target =
-        (Vector2){left_upper.x * tile_size_px, left_upper.y * tile_size_px};
+    r->camera->target = (Vector2){left_upper.x * r->tile_size_px,
+                                  left_upper.y * r->tile_size_px};
 
     BeginMode2D(*r->camera);
 
     int top_x = left_upper.x + PLAYER_RENDER_SQUARE_SIDE;
     int top_y = left_upper.y + PLAYER_RENDER_SQUARE_SIDE;
 
-    draw_background(left_upper, top_x, top_y, r, tile_size_px,
+    draw_background(left_upper, top_x, top_y, r, r->tile_size_px,
                     DRAW_BACKGROUND_VISIBLE);
 
     if (r->current_actor_idx < r->actors.len)
@@ -297,10 +166,10 @@ void render_system(render_state *r, world *w, entity player)
         texture_desc desc =
             resolve_texture_desc(r->textures, actor_sprite->type);
 
-        draw_tile(desc, actor_sprite->position, tile_size_px);
+        draw_tile(desc, actor_sprite->position, r->tile_size_px);
     }
 
-    draw_background(left_upper, top_x, top_y, r, tile_size_px,
+    draw_background(left_upper, top_x, top_y, r, r->tile_size_px,
                     DRAW_BACKGROUND_NON_VISIBLE);
 
     EndMode2D();
