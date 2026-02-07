@@ -20,8 +20,25 @@ static float map_tile_size()
     return (float)GetScreenHeight() / PLAYER_RENDER_SQUARE_SIDE;
 }
 
-void render_state_reinit(render_state *r, world *w, percepted_events *pe)
+void render_state_reinit(render_state *r, world *w, percepted_events *pe,
+                         entity player)
 {
+    if (!valid_entity(w, player))
+    {
+        return;
+    }
+    board_situation *situation = WC(w, player, board_situation);
+    if (situation->type != BOARD_SITUATION_OCCUPIER)
+    {
+        return;
+    }
+    ivec2 player_pos = situation->point;
+
+    r->left_upper = (ivec2){
+        .x = player_pos.x - PLAYER_RENDER_RADIUS,
+        .y = player_pos.y - PLAYER_RENDER_RADIUS,
+    };
+
     r->tile_size_px = map_tile_size();
 
     entity_sprite *es = NULL;
@@ -123,4 +140,6 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe)
             break;
         }
     }
+    r->camera->target = (Vector2){r->left_upper.x * r->tile_size_px,
+                                  r->left_upper.y * r->tile_size_px};
 }

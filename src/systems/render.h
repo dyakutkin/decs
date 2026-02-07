@@ -37,4 +37,4 @@ typedef struct
     Texture2D *texture;
 } texture_desc;
 
-void render_system(render_state *r, world *w, entity player);
+void render_system(render_state *r, world *w);

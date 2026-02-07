@@ -38,7 +38,7 @@ void run_turn(world *w, board *b, turn *t, entity player, render_state *r)
     stamp = (GetTime() - stamp) * 1000.0;
     printf("Update took %.3f ms\n", stamp);
 
-    render_state_reinit(r, w, WC(w, player, percepted_events));
+    render_state_reinit(r, w, WC(w, player, percepted_events), player);
 }
 
 int main(void)
@@ -99,7 +99,7 @@ int main(void)
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        render_system(r, w, player);
+        render_system(r, w);
         EndDrawing();
     } while (!WindowShouldClose());
 

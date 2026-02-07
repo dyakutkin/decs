@@ -3,8 +3,8 @@
 
 #define TILE_TEXTURE_SIZE 128
 
-#define ANIMATION_MOVE_EPS 0.5f
-#define ANIMATION_MOVE_SPEED 8.0f
+#define ANIMATION_MOVE_EPS 0.9f
+#define ANIMATION_MOVE_SPEED 15.0f
 
 static void draw_tile(texture_desc texture_desc, Vector2 screen_pos,
                       float texture_size_px)
@@ -98,33 +98,26 @@ void draw_background(ivec2 left_upper, int top_x, int top_y, render_state *r,
     }
 }
 
-void render_system(render_state *r, world *w, entity player)
+bool move_towards(Vector2 *moved, Vector2 towards)
 {
-    if (!valid_entity(w, player))
+
+    *moved = Vector2Lerp(*moved, towards,
+                         1.0f - expf(-ANIMATION_MOVE_SPEED * GetFrameTime()));
+    if (Vector2Distance(*moved, towards) <= ANIMATION_MOVE_EPS)
     {
-        return;
+        return false;
     }
-    board_situation *situation = WC(w, player, board_situation);
-    if (situation->type != BOARD_SITUATION_OCCUPIER)
-    {
-        return;
-    }
-    ivec2 player_pos = situation->point;
+    return true;
+}
 
-    ivec2 left_upper = {
-        .x = player_pos.x - PLAYER_RENDER_RADIUS,
-        .y = player_pos.y - PLAYER_RENDER_RADIUS,
-    };
-
-    r->camera->target = (Vector2){left_upper.x * r->tile_size_px,
-                                  left_upper.y * r->tile_size_px};
-
+void render_system(render_state *r, world *w)
+{
     BeginMode2D(*r->camera);
 
-    int top_x = left_upper.x + PLAYER_RENDER_SQUARE_SIDE;
-    int top_y = left_upper.y + PLAYER_RENDER_SQUARE_SIDE;
+    int top_x = r->left_upper.x + PLAYER_RENDER_SQUARE_SIDE;
+    int top_y = r->left_upper.y + PLAYER_RENDER_SQUARE_SIDE;
 
-    draw_background(left_upper, top_x, top_y, r, r->tile_size_px,
+    draw_background(r->left_upper, top_x, top_y, r, r->tile_size_px,
                     DRAW_BACKGROUND_VISIBLE);
 
     if (r->current_actor_idx < r->actors.len)
@@ -140,12 +133,8 @@ void render_system(render_state *r, world *w, entity player)
             switch (current_animation.kind)
             {
             case SPRITE_ANIMATION_MOVE:
-                es->position = Vector2Lerp(
-                    es->position, current_animation.payload.move.target,
-                    1.0f - expf(-ANIMATION_MOVE_SPEED * GetFrameTime()));
-                if (Vector2Distance(es->position,
-                                    current_animation.payload.move.target) <=
-                    ANIMATION_MOVE_EPS)
+                if (!move_towards(&es->position,
+                                  current_animation.payload.move.target))
                 {
                     es->current_animation_idx++;
                 }
@@ -156,6 +145,12 @@ void render_system(render_state *r, world *w, entity player)
         {
             r->current_actor_idx++;
         }
+    }
+    else
+    {
+        move_towards(&r->camera->target,
+                     (Vector2){r->left_upper.x * r->tile_size_px,
+                               r->left_upper.y * r->tile_size_px});
     }
 
     for (size_t i = 0; i < r->actors.len; i++)
@@ -168,7 +163,7 @@ void render_system(render_state *r, world *w, entity player)
         draw_tile(desc, actor_sprite->position, r->tile_size_px);
     }
 
-    draw_background(left_upper, top_x, top_y, r, r->tile_size_px,
+    draw_background(r->left_upper, top_x, top_y, r, r->tile_size_px,
                     DRAW_BACKGROUND_NON_VISIBLE);
 
     EndMode2D();

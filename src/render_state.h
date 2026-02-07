@@ -17,6 +17,7 @@ typedef struct
 {
     float tile_size_px;
     Camera2D *camera;
+    ivec2 left_upper;
     textures *textures;
 
     ALIST(entity) actors;
@@ -27,4 +28,5 @@ typedef struct
 
 render_state *render_state_allocate(textures *t, Camera2D *c);
 void render_state_deallocate(render_state *r);
-void render_state_reinit(render_state *r, world *w, percepted_events *pe);
+void render_state_reinit(render_state *r, world *w, percepted_events *pe,
+                         entity player);
