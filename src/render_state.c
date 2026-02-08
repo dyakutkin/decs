@@ -15,10 +15,7 @@ void render_state_deallocate(render_state *r)
     free(r);
 }
 
-static float map_tile_size()
-{
-    return (float)GetScreenHeight() / PLAYER_RENDER_SQUARE_SIDE;
-}
+static float map_tile_size() { return 128; }
 
 void render_state_reinit(render_state *r, world *w, percepted_events *pe,
                          entity player)

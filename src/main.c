@@ -55,7 +55,7 @@ int main(void)
 
     Camera2D camera = {0};
     camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    camera.zoom = .75f;
 
     render_state *r = render_state_allocate(&txtrs, &camera);
 

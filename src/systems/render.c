@@ -1,28 +1,23 @@
 #include "render.h"
 #include <math.h>
 
-#define TILE_TEXTURE_SIZE 128
-
 #define ANIMATION_MOVE_EPS 0.9f
 #define ANIMATION_MOVE_SPEED 15.0f
 
 static void draw_tile(texture_desc texture_desc, Vector2 screen_pos,
                       float texture_size_px)
 {
-    DrawTexturePro(*texture_desc.texture,
+    screen_pos.x = roundf(screen_pos.x);
+    screen_pos.y = roundf(screen_pos.y);
+
+    DrawTextureRec(*texture_desc.texture,
                    (Rectangle){
-                       .x = texture_desc.x * TILE_TEXTURE_SIZE,
-                       .y = texture_desc.y * TILE_TEXTURE_SIZE,
-                       .width = TILE_TEXTURE_SIZE,
-                       .height = TILE_TEXTURE_SIZE,
-                   },
-                   (Rectangle){
-                       .x = screen_pos.x,
-                       .y = screen_pos.y,
+                       .x = texture_desc.x * texture_size_px,
+                       .y = texture_desc.y * texture_size_px,
                        .width = texture_size_px,
                        .height = texture_size_px,
                    },
-                   (Vector2){.x = 0, .y = 0}, 0, RAYWHITE);
+                   screen_pos, RAYWHITE);
 }
 
 static texture_desc resolve_texture_desc(textures *t, sprite_type type)
@@ -43,7 +38,7 @@ static texture_desc resolve_texture_desc(textures *t, sprite_type type)
     }
 }
 
-static bool ivec2_is_visible(ivec2 vec, render_state *rs)
+static bool board_tile_is_visible(ivec2 vec, render_state *rs)
 {
     for (size_t i = 0; i < rs->visible_tiles.len; i++)
     {
@@ -66,7 +61,7 @@ void draw_background(ivec2 left_upper, int top_x, int top_y, render_state *r,
         for (int y = left_upper.y - BG_RENDER_RADIUS_DELTA;
              y < top_y + BG_RENDER_RADIUS_DELTA; y++)
         {
-            bool visible = ivec2_is_visible((ivec2){x, y}, r);
+            bool visible = board_tile_is_visible((ivec2){x, y}, r);
             if (!visible && (mode == DRAW_BACKGROUND_VISIBLE))
             {
                 continue;
@@ -91,24 +86,25 @@ void draw_background(ivec2 left_upper, int top_x, int top_y, render_state *r,
                       (Vector2){.x = x * tile_size_px, .y = y * tile_size_px},
                       tile_size_px);
             if (mode == DRAW_BACKGROUND_NON_VISIBLE)
-                DrawRectanglePro((Rectangle){.x = x * tile_size_px,
+                DrawRectangleRec((Rectangle){.x = x * tile_size_px,
                                              .y = y * tile_size_px,
                                              .width = tile_size_px,
                                              .height = tile_size_px},
-                                 (Vector2){0}, 0, Fade(BLACK, 0.5f));
+                                 (Color){0, 0, 0, (unsigned char)(0.5f * 255)});
         }
     }
 }
 
-bool move_towards(Vector2 *moved, Vector2 towards)
+bool lerp_towards(Vector2 *moved, Vector2 towards)
 {
-
-    *moved = Vector2Lerp(*moved, towards,
-                         1.0f - expf(-ANIMATION_MOVE_SPEED * GetFrameTime()));
     if (Vector2Distance(*moved, towards) <= ANIMATION_MOVE_EPS)
     {
         return false;
     }
+
+    *moved = Vector2Lerp(
+        *moved, towards,
+        1.0f - expf(-ANIMATION_MOVE_SPEED * Clamp(GetFrameTime(), 0.0f, 0.1f)));
     return true;
 }
 
@@ -135,7 +131,10 @@ void render_system(render_state *r, world *w)
             switch (current_animation.kind)
             {
             case SPRITE_ANIMATION_MOVE:
-                if (!move_towards(&es->position,
+                es->position = Vector2MoveTowards(
+                    es->position, current_animation.payload.move.target,
+                    ANIMATION_MOVE_EPS);
+                if (!lerp_towards(&es->position,
                                   current_animation.payload.move.target))
                 {
                     es->current_animation_idx++;
@@ -150,7 +149,7 @@ void render_system(render_state *r, world *w)
     }
     else
     {
-        move_towards(&r->camera->target,
+        lerp_towards(&r->camera->target,
                      (Vector2){r->left_upper.x * r->tile_size_px,
                                r->left_upper.y * r->tile_size_px});
     }
