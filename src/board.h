@@ -25,11 +25,18 @@ typedef struct
     ivec2 origin;
 } event_broadcast;
 
+typedef struct {
+    ALIST(event_broadcast) broadcasts;
+    turn_id turn_id;
+} board_tile_broadcasts;
+
 typedef struct
 {
     OPT(entity) occupier;
     ALIST(entity) ground;
-    ALIST(event_broadcast) event_broadcasts;
+
+    board_tile_broadcasts broadcasts_current;
+    board_tile_broadcasts broadcasts_next;
 } board_tile;
 
 typedef struct
@@ -40,7 +47,8 @@ typedef struct
 
 board *board_allocate();
 void board_deallocate(board *b);
-bool board_get_tile(board *b, ivec2 p, board_tile **out);
+bool board_get_tile_raw(board *b, ivec2 p, board_tile **out);
+bool board_get_tile(board *b, turn *t, ivec2 p, board_tile **out);
 bool board_occupy(board *b, ivec2 p, entity e);
 bool board_deoccupy(board *b, ivec2 p);
 void board_broadcast_event(board *b, turn *t, event e, ...);

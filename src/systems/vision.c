@@ -34,22 +34,19 @@ static bool read_tile_events(percepted_events *pe, board *b, turn *t, int32_t w,
     board_tile *tile;
     ivec2 tt = traced_tile(d, w, facing_vec, side, position);
 
-    if (!board_get_tile(b, tt, &tile))
+    if (!board_get_tile(b, t, tt, &tile))
     {
         return false;
     }
 
     size_t events_read = 0;
 
-    for (size_t i = 0; i < tile->event_broadcasts.len; i++)
+    for (size_t i = 0; i < tile->broadcasts_next.broadcasts.len; i++)
     {
-        if (tile->event_broadcasts.items[i].turn < t->next)
+        if (event_broadcast_is_new(pe,
+                                   tile->broadcasts_next.broadcasts.items[i]))
         {
-            continue;
-        }
-        if (event_broadcast_is_new(pe, tile->event_broadcasts.items[i]))
-        {
-            AAPPEND(pe->broadcasts, tile->event_broadcasts.items[i]);
+            AAPPEND(pe->broadcasts, tile->broadcasts_next.broadcasts.items[i]);
             events_read++;
         }
     }

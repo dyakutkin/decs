@@ -14,7 +14,8 @@ void board_deallocate(board *b)
     for (size_t i = 0; i < BOARD_TILES_AMOUNT; i++)
     {
         free(b->tiles[i].ground.items);
-        free(b->tiles[i].event_broadcasts.items);
+        free(b->tiles[i].broadcasts_current.broadcasts.items);
+        free(b->tiles[i].broadcasts_next.broadcasts.items);
     }
     free(b);
 }
@@ -34,7 +35,7 @@ static bool is_valid_board_tile(ivec2 p)
     return idx < BOARD_TILES_AMOUNT;
 }
 
-bool board_get_tile(board *b, ivec2 p, board_tile **out)
+bool board_get_tile_raw(board *b, ivec2 p, board_tile **out)
 {
     if (!is_valid_board_tile(p))
     {
@@ -47,10 +48,29 @@ bool board_get_tile(board *b, ivec2 p, board_tile **out)
     return true;
 }
 
+bool board_get_tile(board *b, turn *t, ivec2 p, board_tile **out)
+{
+    bool ok = board_get_tile_raw(b, p, out);
+    if (!ok)
+    {
+        return false;
+    }
+    if ((*out)->broadcasts_next.turn_id != t->next)
+    {
+        board_tile_broadcasts prev = (*out)->broadcasts_current;
+        (*out)->broadcasts_current = (*out)->broadcasts_next;
+
+        (*out)->broadcasts_next = prev;
+        ACLEAR((*out)->broadcasts_next.broadcasts);
+        (*out)->broadcasts_next.turn_id = t->next;
+    }
+    return true;
+}
+
 bool board_occupy(board *b, ivec2 p, entity e)
 {
     board_tile *tile;
-    if (!board_get_tile(b, p, &tile))
+    if (!board_get_tile_raw(b, p, &tile))
     {
         return false;
     }
@@ -67,7 +87,7 @@ bool board_occupy(board *b, ivec2 p, entity e)
 bool board_deoccupy(board *b, ivec2 p)
 {
     board_tile *tile;
-    if (!board_get_tile(b, p, &tile))
+    if (!board_get_tile_raw(b, p, &tile))
     {
         return false;
     }
@@ -94,14 +114,12 @@ void board_broadcast_event(board *b, turn *t, event e, ...)
         }
 
         board_tile *tile;
-        if (!board_get_tile(b, p, &tile))
+        if (!board_get_tile(b, t, p, &tile))
         {
             continue;
         }
 
-        // TODO: come up with events cleaning up strategy (e.g. using ring
-        // buffer instead of dynamic array for board tiles' event broadcasts).
-        AAPPEND(tile->event_broadcasts,
+        AAPPEND(tile->broadcasts_next.broadcasts,
                 ((event_broadcast){.event.value = e,
                                    .event.set = true,
                                    .offset = b->event_offset,
