@@ -13,6 +13,8 @@
 #define PLAYER_RENDER_RADIUS 5
 #define PLAYER_RENDER_SQUARE_SIDE (PLAYER_RENDER_RADIUS * 2 + 1)
 
+#define BG_RENDER_RADIUS_DELTA 25
+
 typedef struct
 {
     float tile_size_px;

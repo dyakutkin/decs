@@ -60,9 +60,11 @@ void draw_background(ivec2 left_upper, int top_x, int top_y, render_state *r,
 {
     sprite_type st;
 
-    for (int x = left_upper.x; x < top_x; x++)
+    for (int x = left_upper.x - BG_RENDER_RADIUS_DELTA;
+         x < top_x + BG_RENDER_RADIUS_DELTA; x++)
     {
-        for (int y = left_upper.y; y < top_y; y++)
+        for (int y = left_upper.y - BG_RENDER_RADIUS_DELTA;
+             y < top_y + BG_RENDER_RADIUS_DELTA; y++)
         {
             bool visible = ivec2_is_visible((ivec2){x, y}, r);
             if (!visible && (mode == DRAW_BACKGROUND_VISIBLE))

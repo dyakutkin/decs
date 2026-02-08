@@ -140,6 +140,4 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
             break;
         }
     }
-    r->camera->target = (Vector2){r->left_upper.x * r->tile_size_px,
-                                  r->left_upper.y * r->tile_size_px};
 }
