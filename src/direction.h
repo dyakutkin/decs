@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "panic.h"
+
 typedef enum
 {
     DIRECTION_NORTH,

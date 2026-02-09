@@ -13,6 +13,5 @@ char *direction_repr(direction d)
     case DIRECTION_WEST:
         return "west";
     }
-    fprintf(stderr, "Invalid direction\n");
-    abort();
+    PANIC("Invalid direction\n");
 }

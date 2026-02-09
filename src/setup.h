@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdio.h>
 #include <string.h>
 
+#include "panic.h"
 #include "board.h"
 #include "components.h"
 #include "direction.h"

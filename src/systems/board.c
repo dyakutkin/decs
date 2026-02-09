@@ -29,8 +29,7 @@ static void handle_move(board *b, turn *t, entity e, board_situation *s,
 
     if (!board_deoccupy(b, s->point))
     {
-        fprintf(stderr, "Invalid board state\n");
-        abort();
+        PANIC("Invalid board state\n");
     }
     s->type = BOARD_SITUATION_OCCUPIER;
     s->point = new_point;
