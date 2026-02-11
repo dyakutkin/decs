@@ -1,14 +1,20 @@
-import subprocess, os, pathlib
+import subprocess, pathlib, sys
 
 SRC_DIR = pathlib.Path("./src")
-BUILD_DIR = pathlib.Path("./out")
-BUILD_DIR.mkdir(exist_ok=True)
+OUT_DIR = pathlib.Path("./out")
+OUT_DIR.mkdir(exist_ok=True)
 
-_debug_flags = ["-g3 ", "-O0", "-fno-omit-frame-pointer", "-fno-inline", "-fsanitize=address,undefined"]
+FLAGS_DEBUG = ["-g3 ", "-O0", "-fno-omit-frame-pointer", "-fno-inline", "-fsanitize=address,undefined"]
+FLAGS_RELEASE = ["-O3", "-DNDEBUG"]
+
+LIBS = ["src/lib/win/libraylib.a", "-lm", "-lwinmm", "-lgdi32"]
 
 if __name__ == "__main__":
     sources = list(SRC_DIR.rglob("*.c"))
-    output = BUILD_DIR / "release.exe"
-    cmd = ["gcc", "-O3", "-DNDEBUG", "-o", str(output)] + [str(f) for f in sources] + ["src/lib/win/libraylib.a", "-lm", "-lwinmm", "-lgdi32"]
+    output = OUT_DIR / "release.exe"
+    cmd = ["gcc", "-o", str(output), *FLAGS_RELEASE] + [str(f) for f in sources] + LIBS 
     subprocess.run(cmd, check=True)
+
+    if "--run" in sys.argv:
+        subprocess.run([str(output)], creationflags=subprocess.CREATE_NEW_CONSOLE)
 
