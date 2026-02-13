@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 #include "actions.h"
-#include "alist.h"
+#include "dynarray.h"
 #include "board.h"
 #include "direction.h"
 #include "ivec2.h"
@@ -40,12 +40,12 @@ typedef struct
 
 typedef struct
 {
-    OPT(action) action;
+    OPTION(action) action;
 } picked_action;
 
 typedef struct
 {
-    ALIST(event_broadcast) broadcasts;
+    DYNARRAY(event_broadcast) broadcasts;
 } percepted_events;
 
 typedef struct
@@ -58,6 +58,6 @@ typedef struct
     sprite_type type;
     Vector2 position;
 
-    ALIST(sprite_animation) animations;
+    DYNARRAY(sprite_animation) animations;
     size_t current_animation_idx;
 } entity_sprite;

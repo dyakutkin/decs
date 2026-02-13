@@ -46,16 +46,17 @@ static bool read_tile_events(percepted_events *pe, board *b, turn *t, int32_t w,
         if (event_broadcast_is_new(pe,
                                    tile->broadcasts_next.broadcasts.items[i]))
         {
-            AAPPEND(pe->broadcasts, tile->broadcasts_next.broadcasts.items[i]);
+            DYNARRAY_APPEND(pe->broadcasts,
+                            tile->broadcasts_next.broadcasts.items[i]);
             events_read++;
         }
     }
 
     if (events_read == 0)
     {
-        AAPPEND(pe->broadcasts,
-                ((event_broadcast){
-                    .turn = t->next, .event.set = false, .origin = tt}));
+        DYNARRAY_APPEND(pe->broadcasts, ((event_broadcast){.turn = t->next,
+                                                           .event.set = false,
+                                                           .origin = tt}));
     }
 
     return true;
@@ -130,7 +131,7 @@ void percepted_events_update_system(world *w, board *b, turn *t)
         }
 
         percepted_events *pe = WC(w, e, percepted_events);
-        ACLEAR(pe->broadcasts);
+        DYNARRAY_CLEAR(pe->broadcasts);
 
         ivec2 facing_vec = ivec2_from_direction(s->facing);
         ivec2 side = {.x = -facing_vec.y, .y = facing_vec.x};

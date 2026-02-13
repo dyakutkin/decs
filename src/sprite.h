@@ -4,7 +4,7 @@
 
 #include "./include/raylib/raylib.h"
 
-#include "alist.h"
+#include "dynarray.h"
 
 typedef enum
 {

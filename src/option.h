@@ -1,10 +1,10 @@
-#define OPT(T)                                                                 \
+#define OPTION(T)                                                              \
     struct                                                                     \
     {                                                                          \
         T value;                                                               \
         bool set;                                                              \
     }
-#define OPTSET(opt, new_value)                                                 \
+#define OPTION_SET_VALUE(opt, new_value)                                       \
     opt.set = true;                                                            \
     opt.value = new_value;
-#define OPTSETNULL(opt) opt.set = false;
+#define OPTION_SET_NULL(opt) opt.set = false;

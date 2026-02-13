@@ -2,7 +2,7 @@
 
 #include "include/raylib/raylib.h"
 
-#include "alist.h"
+#include "dynarray.h"
 
 #include "assets/textures.h"
 
@@ -22,10 +22,10 @@ typedef struct
     ivec2 left_upper;
     textures *textures;
 
-    ALIST(entity) actors;
+    DYNARRAY(entity) actors;
     size_t current_actor_idx;
 
-    ALIST(ivec2) visible_tiles;
+    DYNARRAY(ivec2) visible_tiles;
 } render_state;
 
 render_state *render_state_allocate(textures *t, Camera2D *c);

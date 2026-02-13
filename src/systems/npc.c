@@ -20,6 +20,6 @@ void npc_behavior_system(world *w)
                                        npc_random_move_directions_amount];
 
         action action = {.kind = ACTION_MOVE, .payload.direction = d};
-        OPTSET(WC(w, e, picked_action)->action, action);
+        OPTION_SET_VALUE(WC(w, e, picked_action)->action, action);
     }
 }

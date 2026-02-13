@@ -1,8 +1,9 @@
 #pragma once
 
 #include <stdarg.h>
+#include <stdio.h>
 
-#include "alist.h"
+#include "dynarray.h"
 #include "entity.h"
 #include "events.h"
 #include "flags.h"
@@ -19,21 +20,21 @@
 
 typedef struct
 {
-    OPT(event) event;
+    OPTION(event) event;
     turn_id turn;
     size_t offset;
     ivec2 origin;
 } event_broadcast;
 
 typedef struct {
-    ALIST(event_broadcast) broadcasts;
+    DYNARRAY(event_broadcast) broadcasts;
     turn_id turn_id;
 } board_tile_broadcasts;
 
 typedef struct
 {
-    OPT(entity) occupier;
-    ALIST(entity) ground;
+    OPTION(entity) occupier;
+    DYNARRAY(entity) ground;
 
     board_tile_broadcasts broadcasts_current;
     board_tile_broadcasts broadcasts_next;

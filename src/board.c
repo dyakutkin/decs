@@ -1,6 +1,3 @@
-#include <stdarg.h>
-#include <stdio.h>
-
 #include "board.h"
 
 board *board_allocate()
@@ -61,7 +58,7 @@ bool board_get_tile(board *b, turn *t, ivec2 p, board_tile **out)
         (*out)->broadcasts_current = (*out)->broadcasts_next;
 
         (*out)->broadcasts_next = prev;
-        ACLEAR((*out)->broadcasts_next.broadcasts);
+        DYNARRAY_CLEAR((*out)->broadcasts_next.broadcasts);
         (*out)->broadcasts_next.turn_id = t->next;
     }
     return true;
@@ -80,7 +77,7 @@ bool board_occupy(board *b, ivec2 p, entity e)
         return false;
     }
 
-    OPTSET(tile->occupier, e);
+    OPTION_SET_VALUE(tile->occupier, e);
     return true;
 }
 
@@ -94,7 +91,7 @@ bool board_deoccupy(board *b, ivec2 p)
 
     if (tile->occupier.set)
     {
-        OPTSETNULL(tile->occupier);
+        OPTION_SET_NULL(tile->occupier);
     }
 
     return true;
@@ -119,12 +116,12 @@ void board_broadcast_event(board *b, turn *t, event e, ...)
             continue;
         }
 
-        AAPPEND(tile->broadcasts_next.broadcasts,
-                ((event_broadcast){.event.value = e,
-                                   .event.set = true,
-                                   .offset = b->event_offset,
-                                   .turn = t->next,
-                                   .origin = p}));
+        DYNARRAY_APPEND(tile->broadcasts_next.broadcasts,
+                        ((event_broadcast){.event.value = e,
+                                           .event.set = true,
+                                           .offset = b->event_offset,
+                                           .turn = t->next,
+                                           .origin = p}));
     }
 
     b->event_offset++;

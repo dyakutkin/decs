@@ -5,7 +5,7 @@
 #include "../include/raylib/raylib.h"
 #include "../include/raylib/raymath.h"
 
-#include "../alist.h"
+#include "../dynarray.h"
 
 #include "../assets/textures.h"
 

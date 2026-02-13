@@ -92,7 +92,7 @@ int main(void)
         {
             action action = {.kind = ACTION_MOVE,
                              .payload.direction = direction};
-            OPTSET(WC(w, player, picked_action)->action, action);
+            OPTION_SET_VALUE(WC(w, player, picked_action)->action, action);
 
             run_turn(w, b, t, player, r);
         }
