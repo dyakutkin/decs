@@ -1,10 +1,12 @@
 #include "world.h"
-#include "entity.h"
-#include <stdlib.h>
 
 world *world_allocate(void)
 {
     world *w = calloc(1, sizeof(world));
+
+    // Slot #0 is a "sentinel" value so we're starting at #1.
+    w->len = 1;
+
     return w;
 }
 
@@ -21,10 +23,10 @@ void world_deallocate(world *w)
 bool create_entity(world *w, entity *e)
 {
     size_t idx;
-    if (w->free_idxs_amount > 0)
+    if (w->last_freed.idx != 0)
     {
-        idx = w->free_idxs[w->free_idxs_amount - 1];
-        w->free_idxs_amount--;
+        idx = w->last_freed.idx;
+        w->last_freed = w->status[idx].prev_freed;
     }
     else if (w->len == MAX_ENTITIES)
     {
@@ -36,11 +38,11 @@ bool create_entity(world *w, entity *e)
         w->len++;
     }
 
-    w->revision[idx]++;
-    w->initialized[idx] = true;
+    w->status[idx].revision++;
+    w->status[idx].used = true;
 
     e->idx = idx;
-    e->revision = w->revision[idx];
+    e->revision = w->status[idx].revision;
 
     return true;
 }
@@ -52,13 +54,11 @@ bool remove_entity(world *w, entity e)
         return false;
     }
 
-    if (w->free_idxs_amount == MAX_ENTITIES)
-    {
-        return false;
-    }
+    entity_world_status *ews = WC(w, e, status);
 
-    w->free_idxs[w->free_idxs_amount] = e.idx;
-    w->free_idxs_amount++;
+    ews->prev_freed = w->last_freed;
+    w->last_freed = e;
+    ews->used = false;
 
 #define X(Type) w->Type[e.idx] = (Type){0};
 #include "components.def"
@@ -69,9 +69,9 @@ bool remove_entity(world *w, entity e)
 
 bool valid_entity(world *w, entity e)
 {
-    if (e.idx >= MAX_ENTITIES)
+    if (e.idx == 0 || e.idx >= MAX_ENTITIES)
     {
         return false;
     }
-    return w->revision[e.idx] == e.revision && w->initialized[e.idx];
+    return w->status[e.idx].revision == e.revision && w->status[e.idx].used;
 }

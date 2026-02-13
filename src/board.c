@@ -94,7 +94,7 @@ bool board_deoccupy(board *b, ivec2 p)
 
     if (tile->occupier.set)
     {
-        OPTUNSET(tile->occupier);
+        OPTSETNULL(tile->occupier);
     }
 
     return true;

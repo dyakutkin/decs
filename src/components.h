@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 #include "actions.h"
 #include "alist.h"
 #include "board.h"
