@@ -118,19 +118,19 @@ void percepted_events_update_system(world *w, board *b, turn *t)
             continue;
         }
 
-        entity_flags *flags = WC(w, e, entity_flags);
+        entity_flags *flags = COMPONENT(w, e, entity_flags);
         if (!FCONTAINS(flags->flags, ENTITY_FLAG_VISION))
         {
             continue;
         }
 
-        board_situation *s = WC(w, e, board_situation);
+        board_situation *s = COMPONENT(w, e, board_situation);
         if (!(s->type == BOARD_SITUATION_OCCUPIER))
         {
             continue;
         }
 
-        percepted_events *pe = WC(w, e, percepted_events);
+        percepted_events *pe = COMPONENT(w, e, percepted_events);
         DYNARRAY_CLEAR(pe->broadcasts);
 
         ivec2 facing_vec = ivec2_from_direction(s->facing);

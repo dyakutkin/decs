@@ -24,7 +24,7 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
     {
         return;
     }
-    board_situation *situation = WC(w, player, board_situation);
+    board_situation *situation = COMPONENT(w, player, board_situation);
     if (situation->type != BOARD_SITUATION_OCCUPIER)
     {
         return;
@@ -57,8 +57,8 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
 
         event ev = eb.event.value;
 
-        es = WC(w, ev.subject.entity, entity_sprite);
-        flags = WC(w, ev.subject.entity, entity_flags);
+        es = COMPONENT(w, ev.subject.entity, entity_sprite);
+        flags = COMPONENT(w, ev.subject.entity, entity_flags);
 
         DYNARRAY_CLEAR(es->animations);
         es->current_animation_idx = 0;

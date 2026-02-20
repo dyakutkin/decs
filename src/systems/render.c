@@ -121,7 +121,7 @@ void render_system(render_state *r, world *w)
     if (r->current_actor_idx < r->actors.len)
     {
         entity current_actor = r->actors.items[r->current_actor_idx];
-        entity_sprite *es = WC(w, current_actor, entity_sprite);
+        entity_sprite *es = COMPONENT(w, current_actor, entity_sprite);
 
         if (es->current_animation_idx < es->animations.len)
         {
@@ -157,7 +157,7 @@ void render_system(render_state *r, world *w)
     for (size_t i = 0; i < r->actors.len; i++)
     {
         entity actor = r->actors.items[i];
-        entity_sprite *actor_sprite = WC(w, actor, entity_sprite);
+        entity_sprite *actor_sprite = COMPONENT(w, actor, entity_sprite);
         texture_desc desc =
             resolve_texture_desc(r->textures, actor_sprite->type);
 

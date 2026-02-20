@@ -15,7 +15,7 @@
              (entity){.idx = 1, .revision = _world->status[1].revision};       \
          _entity.idx < _world->len; _entity.idx++,                             \
                 _entity.revision = _world->status[_entity.idx].revision)
-#define WC(world, entity, component)                                           \
+#define COMPONENT(world, entity, component)                                           \
     (valid_entity(world, entity) ? &world->component[entity.idx]               \
                                  : &world->component[0])
 

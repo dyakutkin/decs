@@ -9,7 +9,7 @@ void npc_behavior_system(world *w)
             continue;
         }
 
-        entity_flags *flags = WC(w, e, entity_flags);
+        entity_flags *flags = COMPONENT(w, e, entity_flags);
         if (!FCONTAINS(flags->flags, ENTITY_FLAG_NPC))
         {
             continue;
@@ -20,6 +20,6 @@ void npc_behavior_system(world *w)
                                        npc_random_move_directions_amount];
 
         action action = {.kind = ACTION_MOVE, .payload.direction = d};
-        OPTION_SET_VALUE(WC(w, e, picked_action)->action, action);
+        OPTION_SET_VALUE(COMPONENT(w, e, picked_action)->action, action);
     }
 }

@@ -38,7 +38,7 @@ void run_turn(world *w, board *b, turn *t, entity player, render_state *r)
     stamp = (GetTime() - stamp) * 1000.0;
     printf("Update took %.3f ms\n", stamp);
 
-    render_state_reinit(r, w, WC(w, player, percepted_events), player);
+    render_state_reinit(r, w, COMPONENT(w, player, percepted_events), player);
 }
 
 int main(void)
@@ -92,7 +92,8 @@ int main(void)
         {
             action action = {.kind = ACTION_MOVE,
                              .payload.direction = direction};
-            OPTION_SET_VALUE(WC(w, player, picked_action)->action, action);
+            OPTION_SET_VALUE(COMPONENT(w, player, picked_action)->action,
+                             action);
 
             run_turn(w, b, t, player, r);
         }

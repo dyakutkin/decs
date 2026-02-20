@@ -54,7 +54,7 @@ bool remove_entity(world *w, entity e)
         return false;
     }
 
-    entity_world_status *ews = WC(w, e, status);
+    entity_world_status *ews = COMPONENT(w, e, status);
 
     ews->prev_freed = w->last_freed;
     w->last_freed = e;

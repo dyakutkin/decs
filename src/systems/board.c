@@ -44,13 +44,13 @@ void board_position_update_system(world *w, board *b, turn *t)
             continue;
         }
 
-        board_situation *s = WC(w, e, board_situation);
+        board_situation *s = COMPONENT(w, e, board_situation);
         if (!(s->type == BOARD_SITUATION_OCCUPIER))
         {
             continue;
         }
 
-        picked_action *pa = WC(w, e, picked_action);
+        picked_action *pa = COMPONENT(w, e, picked_action);
         if (pa->action.set && pa->action.value.kind == ACTION_MOVE)
         {
             handle_move(b, t, e, s, pa);

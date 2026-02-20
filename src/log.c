@@ -3,7 +3,7 @@
 
 static char *resolve_entity_name(world *w, entity e)
 {
-    entity_name *en = WC(w, e, entity_name);
+    entity_name *en = COMPONENT(w, e, entity_name);
     if (en == NULL)
     {
         return "Unknown";
@@ -61,7 +61,7 @@ static void print_event(world *w, event_broadcast eb)
 
 void print_player_percepted_events_system(entity player, world *w, turn *t)
 {
-    percepted_events *pe = WC(w, player, percepted_events);
+    percepted_events *pe = COMPONENT(w, player, percepted_events);
     printf("----------Turn %zu----------\n", t->next);
     for (size_t i = 0; i < pe->broadcasts.len; i++)
     {
