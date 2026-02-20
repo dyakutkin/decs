@@ -1,11 +1,11 @@
-#define DYNARRAY(T)                                                               \
+#define DYNARRAY(T)                                                            \
     struct                                                                     \
     {                                                                          \
         size_t len;                                                            \
         size_t cap;                                                            \
         T *items;                                                              \
     }
-#define DYNARRAY_APPEND(list, element)                                                 \
+#define DYNARRAY_APPEND(list, element)                                         \
     do                                                                         \
     {                                                                          \
         if (list.len >= list.cap)                                              \
@@ -16,7 +16,7 @@
         list.items[list.len] = element;                                        \
         list.len++;                                                            \
     } while (0)
-#define DYNARRAY_CLEAR(list)                                                           \
+#define DYNARRAY_CLEAR(list)                                                   \
     do                                                                         \
     {                                                                          \
         list.len = 0;                                                          \

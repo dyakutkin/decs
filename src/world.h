@@ -8,7 +8,7 @@
 #include "components.h"
 #include "entity.h"
 
-#define MAX_ENTITIES 10000000
+#define MAX_ENTITIES 1000000
 
 #define ITERW(_world, _entity)                                                 \
     for (entity _entity =                                                      \

@@ -3,9 +3,9 @@
 #include <stdint.h>
 
 #include "actions.h"
-#include "dynarray.h"
 #include "board.h"
 #include "direction.h"
+#include "dynarray.h"
 #include "ivec2.h"
 #include "option.h"
 #include "sprite.h"
