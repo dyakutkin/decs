@@ -33,28 +33,27 @@ static void print_event(world *w, event_broadcast eb)
     case EVENT_COLLECTS:
         printf("%s collects %s.\n",
                resolve_entity_name(w, eb.event.value.subject.entity),
-               resolve_entity_name(w, eb.event.value.payload.object.entity));
+               resolve_entity_name(w, eb.event.value.object.entity));
         return;
     case EVENT_DROPS:
         printf("%s drops %s.\n",
                resolve_entity_name(w, eb.event.value.subject.entity),
-               resolve_entity_name(w, eb.event.value.payload.object.entity));
+               resolve_entity_name(w, eb.event.value.object.entity));
         return;
     case EVENT_EATS:
         printf("%s eats %s.\n",
                resolve_entity_name(w, eb.event.value.subject.entity),
-               resolve_entity_name(w, eb.event.value.payload.object.entity));
+               resolve_entity_name(w, eb.event.value.object.entity));
         return;
     case EVENT_WALKS:
         printf("%s walks %s.\n",
                resolve_entity_name(w, eb.event.value.subject.entity),
-               direction_repr(eb.event.value.payload.direction.direction));
+               direction_repr(eb.event.value.direction));
         return;
     case EVENT_BUMPS:
         printf("%s bumps %s on Turn #%zu (offset %zu)\n",
                resolve_entity_name(w, eb.event.value.subject.entity),
-               direction_repr(eb.event.value.payload.direction.direction),
-               eb.turn, eb.offset);
+               direction_repr(eb.event.value.direction), eb.turn, eb.offset);
         return;
     }
 }
