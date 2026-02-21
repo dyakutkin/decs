@@ -13,7 +13,7 @@
 
 #include "assets/textures.h"
 
-#include "systems/board.h"
+#include "systems/board.hpp"
 #include "systems/npc.h"
 #include "systems/render.h"
 #include "systems/vision.h"
@@ -53,9 +53,7 @@ int main(void)
 
     textures txtrs = textures_allocate();
 
-    Camera2D camera = {0};
-    camera.rotation = 0.0f;
-    camera.zoom = .75f;
+    Camera2D camera{.rotation = 0.0f, .zoom = .75f};
 
     render_state *r = render_state_allocate(&txtrs, &camera);
 

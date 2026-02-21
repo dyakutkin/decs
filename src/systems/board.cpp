@@ -1,4 +1,4 @@
-#include "board.h"
+#include "board.hpp"
 
 static void handle_move(board *b, turn *t, entity e, board_situation *s,
                         picked_action *pa)
@@ -6,8 +6,8 @@ static void handle_move(board *b, turn *t, entity e, board_situation *s,
     // Update facing regardless of the move success.
     s->facing = pa->action.value.payload.direction;
 
-    ivec2 new_point = ivec2_add(
-        s->point, ivec2_from_direction(pa->action.value.payload.direction));
+    ivec2 new_point =
+        s->point.add(ivec2::from_direction(pa->action.value.payload.direction));
 
     if (!board_occupy(b, new_point, e))
     {

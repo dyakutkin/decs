@@ -133,7 +133,7 @@ void percepted_events_update_system(world *w, board *b, turn *t)
         percepted_events *pe = COMPONENT(w, e, percepted_events);
         DYNARRAY_CLEAR(pe->broadcasts);
 
-        ivec2 facing_vec = ivec2_from_direction(s->facing);
+        ivec2 facing_vec = ivec2::from_direction(s->facing);
         ivec2 side = {.x = -facing_vec.y, .y = facing_vec.x};
 
         cast_depth(pe, b, t, 0, facing_vec, side, s->point);

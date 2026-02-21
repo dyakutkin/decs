@@ -6,7 +6,7 @@
 #include "board.h"
 #include "direction.h"
 #include "dynarray.h"
-#include "ivec2.h"
+#include "ivec2.hpp"
 #include "option.h"
 #include "sprite.h"
 

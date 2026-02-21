@@ -62,7 +62,7 @@ static bool board_tile_is_visible(ivec2 vec, render_state *rs)
 {
     for (size_t i = 0; i < rs->visible_tiles.len; i++)
     {
-        if (ivec2_eq(vec, rs->visible_tiles.items[i]))
+        if (vec.eq(rs->visible_tiles.items[i]))
         {
             return true;
         }

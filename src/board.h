@@ -7,7 +7,7 @@
 #include "entity.h"
 #include "events.h"
 #include "flags.h"
-#include "ivec2.h"
+#include "ivec2.hpp"
 #include "option.h"
 #include "turn.h"
 

@@ -2,7 +2,7 @@
 
 #include "direction.h"
 #include "entity.h"
-#include "ivec2.h"
+#include "ivec2.hpp"
 #include "turn.h"
 
 typedef struct

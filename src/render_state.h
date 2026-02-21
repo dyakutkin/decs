@@ -7,7 +7,7 @@
 #include "assets/textures.h"
 
 #include "entity.h"
-#include "ivec2.h"
+#include "ivec2.hpp"
 #include "world.h"
 
 #define PLAYER_RENDER_RADIUS 5

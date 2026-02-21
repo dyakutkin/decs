@@ -1,4 +1,5 @@
 #include "render_state.h"
+#include "ivec2.hpp"
 
 render_state *render_state_allocate(textures *t, Camera2D *c)
 {
@@ -95,10 +96,10 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
                         .move = {
                             .target = (Vector2){
                                 .x = (ev.origin.x +
-                                      ivec2_from_direction(ev.direction).x) *
+                                      ivec2::from_direction(ev.direction).x) *
                                      r->tile_size_px,
                                 .y = (ev.origin.y +
-                                      ivec2_from_direction(ev.direction).y) *
+                                      ivec2::from_direction(ev.direction).y) *
                                      r->tile_size_px}}}}));
             break;
         case EVENT_BUMPS:
@@ -112,10 +113,10 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
                         .move = {
                             .target = (Vector2){
                                 .x = (ev.origin.x +
-                                      ivec2_from_direction(ev.direction).x) *
+                                      ivec2::from_direction(ev.direction).x) *
                                      r->tile_size_px,
                                 .y = (ev.origin.y +
-                                      ivec2_from_direction(ev.direction).y) *
+                                      ivec2::from_direction(ev.direction).y) *
                                      r->tile_size_px}}}}));
             DYNARRAY_APPEND(
                 es->animations,
