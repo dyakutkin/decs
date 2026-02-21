@@ -25,16 +25,36 @@ static texture_desc resolve_texture_desc(textures *t, sprite_type type)
     switch (type)
     {
     case SPRITE_PLAYER:
-        return (texture_desc){.texture = &t->chars, .x = 0, .y = 0};
+        return (texture_desc){
+            .x = 0,
+            .y = 0,
+            .texture = &t->chars,
+        };
     case SPRITE_NPC:
-        return (texture_desc){.texture = &t->chars, .x = 0, .y = 1};
+        return (texture_desc){
+            .x = 0,
+            .y = 1,
+            .texture = &t->chars,
+        };
     case SPRITE_GRASS:
-        return (texture_desc){.texture = &t->terrain, .x = 0, .y = 0};
+        return (texture_desc){
+            .x = 0,
+            .y = 0,
+            .texture = &t->terrain,
+        };
     case SPRITE_WALL:
-        return (texture_desc){.texture = &t->terrain, .x = 0, .y = 1};
+        return (texture_desc){
+            .x = 0,
+            .y = 1,
+            .texture = &t->terrain,
+        };
     case SPRITE_UNKNOWN:
     default:
-        return (texture_desc){.texture = &t->error, .x = 0, .y = 0};
+        return (texture_desc){
+            .x = 0,
+            .y = 0,
+            .texture = &t->error,
+        };
     }
 }
 

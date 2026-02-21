@@ -15,13 +15,13 @@ LIBS = ["src/lib/win/libraylib.a", "-lm", "-lwinmm", "-lgdi32"]
 # xxd -i .\assets\apple.png > apple.h
 
 if __name__ == "__main__":
-    sources = list(SRC_DIR.rglob("*.c"))
+    sources = list(SRC_DIR.rglob("*.c")) + list(SRC_DIR.rglob("*.cpp"))
 
     mode = sys.argv[1]
     exe, flags, should_run = MODES[mode]
     output = OUT_DIR / exe
 
-    cmd = ["gcc", "-o", str(output), *flags] + [str(f) for f in sources] + LIBS 
+    cmd = ["g++", "-o", str(output), *flags] + [str(f) for f in sources] + LIBS 
     subprocess.run(cmd, check=True)
 
     if should_run:

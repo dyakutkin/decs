@@ -2,7 +2,7 @@
 
 render_state *render_state_allocate(textures *t, Camera2D *c)
 {
-    render_state *r = calloc(1, sizeof(render_state));
+    render_state *r = (render_state *)calloc(1, sizeof(render_state));
     r->camera = c;
     r->textures = t;
     return r;
@@ -91,13 +91,15 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
                 es->animations,
                 ((sprite_animation){
                     .kind = SPRITE_ANIMATION_MOVE,
-                    .payload.move.target =
-                        (Vector2){.x = (ev.origin.x +
-                                        ivec2_from_direction(ev.direction).x) *
-                                       r->tile_size_px,
-                                  .y = (ev.origin.y +
-                                        ivec2_from_direction(ev.direction).y) *
-                                       r->tile_size_px}}));
+                    .payload = {
+                        .move = {
+                            .target = (Vector2){
+                                .x = (ev.origin.x +
+                                      ivec2_from_direction(ev.direction).x) *
+                                     r->tile_size_px,
+                                .y = (ev.origin.y +
+                                      ivec2_from_direction(ev.direction).y) *
+                                     r->tile_size_px}}}}));
             break;
         case EVENT_BUMPS:
             es->position = (Vector2){.x = ev.origin.x * r->tile_size_px,
@@ -106,19 +108,23 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
                 es->animations,
                 ((sprite_animation){
                     .kind = SPRITE_ANIMATION_MOVE,
-                    .payload.move.target =
-                        (Vector2){.x = (ev.origin.x +
-                                        ivec2_from_direction(ev.direction).x) *
-                                       r->tile_size_px,
-                                  .y = (ev.origin.y +
-                                        ivec2_from_direction(ev.direction).y) *
-                                       r->tile_size_px}}));
+                    .payload = {
+                        .move = {
+                            .target = (Vector2){
+                                .x = (ev.origin.x +
+                                      ivec2_from_direction(ev.direction).x) *
+                                     r->tile_size_px,
+                                .y = (ev.origin.y +
+                                      ivec2_from_direction(ev.direction).y) *
+                                     r->tile_size_px}}}}));
             DYNARRAY_APPEND(
                 es->animations,
-                ((sprite_animation){.kind = SPRITE_ANIMATION_MOVE,
-                                    .payload.move.target = (Vector2){
-                                        .x = ev.origin.x * r->tile_size_px,
-                                        .y = ev.origin.y * r->tile_size_px}}));
+                ((sprite_animation){
+                    .kind = SPRITE_ANIMATION_MOVE,
+                    .payload = {
+                        .move = {.target = (Vector2){
+                                     .x = ev.origin.x * r->tile_size_px,
+                                     .y = ev.origin.y * r->tile_size_px}}}}));
             break;
         case EVENT_DIES:
         case EVENT_OWNS:

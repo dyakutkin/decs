@@ -2,7 +2,7 @@
 
 board *board_allocate()
 {
-    board *b = calloc(1, sizeof(board));
+    board *b = (board *)calloc(1, sizeof(board));
     return b;
 }
 
@@ -117,10 +117,13 @@ void board_broadcast_event(board *b, turn *t, event e, ...)
         }
 
         DYNARRAY_APPEND(tile->broadcasts_next.broadcasts,
-                        ((event_broadcast){.event.value = e,
-                                           .event.set = true,
-                                           .offset = b->event_offset,
+                        ((event_broadcast){.event =
+                                               {
+                                                   .value = e,
+                                                   .set = true,
+                                               },
                                            .turn = t->next,
+                                           .offset = b->event_offset,
                                            .origin = p}));
     }
 

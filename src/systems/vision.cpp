@@ -9,16 +9,16 @@ static ivec2 traced_tile(int32_t d, int32_t w, ivec2 facing, ivec2 side,
     return result;
 }
 
-static bool event_broadcast_is_new(percepted_events *pe, event_broadcast new)
+static bool event_broadcast_is_new(percepted_events *pe, event_broadcast event)
 {
-    if (!new.event.set)
+    if (!event.event.set)
     {
         return true;
     }
     for (size_t present = 0; present < pe->broadcasts.len; present++)
     {
-        if (pe->broadcasts.items[present].offset == new.offset &&
-            pe->broadcasts.items[present].turn == new.turn)
+        if (pe->broadcasts.items[present].offset == event.offset &&
+            pe->broadcasts.items[present].turn == event.turn)
         {
             return false;
         }
@@ -54,8 +54,8 @@ static bool read_tile_events(percepted_events *pe, board *b, turn *t, int32_t w,
 
     if (events_read == 0)
     {
-        DYNARRAY_APPEND(pe->broadcasts, ((event_broadcast){.turn = t->next,
-                                                           .event.set = false,
+        DYNARRAY_APPEND(pe->broadcasts, ((event_broadcast){.event = {},
+                                                           .turn = t->next,
                                                            .origin = tt}));
     }
 

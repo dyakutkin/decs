@@ -2,7 +2,7 @@
 #define FSET(flag, mask)                                                       \
     do                                                                         \
     {                                                                          \
-        flag |= mask;                                                          \
+        flag = static_cast<entity_flag>(flag | mask);                          \
     } while (0);
 #define FCLEAR(flag, mask)                                                     \
     do                                                                         \

@@ -2,7 +2,7 @@
 
 world *world_allocate(void)
 {
-    world *w = calloc(1, sizeof(world));
+    world *w = (world *)calloc(1, sizeof(world));
 
     // Slot #0 is a "sentinel" value so we're starting at #1.
     w->len = 1;
@@ -60,7 +60,7 @@ bool remove_entity(world *w, entity e)
     w->last_freed = e;
     ews->used = false;
 
-#define X(Type) w->Type[e.idx] = (Type){0};
+#define X(Type) w->Type[e.idx] = Type{};
 #include "components.def"
 #undef X
 

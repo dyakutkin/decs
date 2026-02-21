@@ -90,8 +90,10 @@ int main(void)
 
         if (got_input)
         {
-            action action = {.kind = ACTION_MOVE,
-                             .payload.direction = direction};
+            action action = {
+                .kind = ACTION_MOVE,
+            };
+            action.payload.direction = direction;
             OPTION_SET_VALUE(COMPONENT(w, player, picked_action)->action,
                              action);
 

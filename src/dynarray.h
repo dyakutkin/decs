@@ -8,13 +8,14 @@
 #define DYNARRAY_APPEND(list, element)                                         \
     do                                                                         \
     {                                                                          \
-        if (list.len >= list.cap)                                              \
+        if ((list).len >= (list).cap)                                          \
         {                                                                      \
-            list.cap += list.cap / 2 + 1;                                      \
-            list.items = realloc(list.items, list.cap * sizeof(*list.items));  \
+            (list).cap += (list).cap / 2 + 1;                                  \
+            (list).items = static_cast<decltype((list).items)>(                \
+                realloc((list).items, (list).cap * sizeof(*(list).items)));    \
         }                                                                      \
-        list.items[list.len] = element;                                        \
-        list.len++;                                                            \
+        (list).items[(list).len] = (element);                                  \
+        (list).len++;                                                          \
     } while (0)
 #define DYNARRAY_CLEAR(list)                                                   \
     do                                                                         \

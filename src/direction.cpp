@@ -1,6 +1,6 @@
 #include "direction.h"
 
-char *direction_repr(direction d)
+const char *direction_repr(direction d)
 {
     switch (d)
     {

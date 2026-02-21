@@ -45,7 +45,7 @@ entity setup_actors(world *w, board *b)
         {
             PANIC("NPC setup failed\n");
         }
-        if (!place_entity_on_board(npc, (ivec2){i, i}, w, b))
+        if (!place_entity_on_board(npc, (ivec2){static_cast<int32_t>(i), static_cast<int32_t>(i)}, w, b))
         {
             PANIC("NPC setup failed\n");
         }

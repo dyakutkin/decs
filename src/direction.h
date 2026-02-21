@@ -13,4 +13,4 @@ typedef enum
     DIRECTION_WEST
 } direction;
 
-char *direction_repr(direction d);
+const char *direction_repr(direction d);

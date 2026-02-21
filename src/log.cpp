@@ -1,7 +1,7 @@
 #include "log.h"
 #include "turn.h"
 
-static char *resolve_entity_name(world *w, entity e)
+static const char *resolve_entity_name(world *w, entity e)
 {
     entity_name *en = COMPONENT(w, e, entity_name);
     if (en == NULL)
