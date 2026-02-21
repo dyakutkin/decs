@@ -1,6 +1,6 @@
-#include "turn.h"
+#include "turn.hpp"
 
-turn *turn_allocate()
+turn *turn::allocate()
 {
     turn *t = (turn *)malloc(sizeof(turn));
     t->current = 0;
@@ -8,8 +8,8 @@ turn *turn_allocate()
     return t;
 }
 
-void turn_increment(turn *t)
+void turn::increment()
 {
-    t->current = t->next;
-    t->next++;
+    this->current = this->next;
+    this->next++;
 }

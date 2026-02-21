@@ -9,7 +9,7 @@
 #include "flags.h"
 #include "ivec2.hpp"
 #include "option.h"
-#include "turn.h"
+#include "turn.hpp"
 
 #define BOARD_SIDE_TILES_AMOUNT 5000
 #define BOARD_TILES_AMOUNT (BOARD_SIDE_TILES_AMOUNT * BOARD_SIDE_TILES_AMOUNT)

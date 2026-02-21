@@ -6,7 +6,7 @@
 #include "entity.h"
 #include "log.h"
 #include "option.h"
-#include "turn.h"
+#include "turn.hpp"
 #include "world.h"
 
 #include "setup.h"
@@ -32,7 +32,7 @@ void run_turn(world *w, board *b, turn *t, entity player, render_state *r)
     percepted_events_update_system(w, b, t);
     print_player_percepted_events_system(player, w, t);
 
-    turn_increment(t);
+    t->increment();
     board_notify_new_turn(b);
 
     stamp = (GetTime() - stamp) * 1000.0;
@@ -43,7 +43,7 @@ void run_turn(world *w, board *b, turn *t, entity player, render_state *r)
 
 int main(void)
 {
-    turn *t = turn_allocate();
+    turn *t = turn::allocate();
     board *b = board_allocate();
     world *w = world_allocate();
 

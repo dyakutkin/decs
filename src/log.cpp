@@ -1,5 +1,4 @@
 #include "log.h"
-#include "turn.h"
 
 static const char *resolve_entity_name(world *w, entity e)
 {
