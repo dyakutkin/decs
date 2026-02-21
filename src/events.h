@@ -38,14 +38,8 @@ typedef struct
 
     event_actor subject;
     event_kind kind;
-    union
-    {
-        event_actor object;
-        struct
-        {
-            direction direction;
-            ivec2 origin;
-        } direction;
-        enum event_status status;
-    } payload;
+
+    event_actor object;
+    direction direction;
+    ivec2 origin;
 } event;

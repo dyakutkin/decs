@@ -13,18 +13,16 @@ static void handle_move(board *b, turn *t, entity e, board_situation *s,
     {
         event event = {.subject = {.entity = e},
                        .kind = EVENT_BUMPS,
-                       .payload.direction = {
-                           .direction = pa->action.value.payload.direction,
-                           .origin = s->point}};
+                       .direction = pa->action.value.payload.direction,
+                       .origin = s->point};
         BROADCAST_EVENT(b, t, event, s->point, new_point);
         return;
     }
 
-    event event = {
-        .subject = {.entity = e},
-        .kind = EVENT_WALKS,
-        .payload.direction = {.direction = pa->action.value.payload.direction,
-                              .origin = s->point}};
+    event event = {.subject = {.entity = e},
+                   .kind = EVENT_WALKS,
+                   .direction = pa->action.value.payload.direction,
+                   .origin = s->point};
     BROADCAST_EVENT(b, t, event, s->point, new_point);
 
     if (!board_deoccupy(b, s->point))

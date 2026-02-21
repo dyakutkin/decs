@@ -11,6 +11,9 @@ MODES = {
 
 LIBS = ["src/lib/win/libraylib.a", "-lm", "-lwinmm", "-lgdi32"]
 
+# TODO: consider "embedding" assets into the binary, e.g.
+# xxd -i .\assets\apple.png > apple.h
+
 if __name__ == "__main__":
     sources = list(SRC_DIR.rglob("*.c"))
 
