@@ -7,34 +7,30 @@
 
 #include "../dynarray.h"
 
-#include "../assets/textures.h"
-
-#include "../board.h"
-#include "../entity.h"
 #include "../flags.h"
-#include "../render_state.h"
+#include "../render_state.hpp"
 #include "../world.h"
 
-typedef enum
+enum draw_background_mode
 {
     DRAW_BACKGROUND_VISIBLE,
     DRAW_BACKGROUND_NON_VISIBLE,
-} draw_background_mode;
+};
 
-typedef enum
+enum tile_type
 {
     TILE_TYPE_UNKNOWN,
     TILE_TYPE_GRASS,
     TILE_TYPE_WALL,
     TILE_TYPE_PLAYER,
     TILE_TYPE_NPC,
-} tile_type;
+};
 
-typedef struct
+struct texture_desc
 {
     size_t x;
     size_t y;
     Texture2D *texture;
-} texture_desc;
+};
 
 void render_system(render_state *r, world *w);

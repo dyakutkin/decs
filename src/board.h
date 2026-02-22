@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "dynarray.h"
-#include "entity.h"
+#include "entity.hpp"
 #include "events.h"
 #include "flags.h"
 #include "ivec2.hpp"
@@ -26,7 +26,8 @@ typedef struct
     ivec2 origin;
 } event_broadcast;
 
-typedef struct {
+typedef struct
+{
     DYNARRAY(event_broadcast) broadcasts;
     turn_id turn_id;
 } board_tile_broadcasts;

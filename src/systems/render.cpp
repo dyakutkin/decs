@@ -1,5 +1,4 @@
-#include "render.h"
-#include <math.h>
+#include "render.hpp"
 
 #define ANIMATION_MOVE_EPS 0.9f
 #define ANIMATION_MOVE_SPEED 15.0f

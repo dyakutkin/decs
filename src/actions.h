@@ -1,7 +1,7 @@
 #pragma once
 
 #include "direction.h"
-#include "entity.h"
+#include "entity.hpp"
 
 typedef enum
 {

@@ -1,26 +1,24 @@
 #pragma once
 
-#include <stdlib.h>
-
 #include "./include/raylib/raylib.h"
 
 #include "dynarray.h"
 
-typedef enum
+enum sprite_type
 {
     SPRITE_UNKNOWN,
     SPRITE_GRASS,
     SPRITE_WALL,
     SPRITE_PLAYER,
     SPRITE_NPC,
-} sprite_type;
+};
 
-typedef enum
+enum sprite_animation_kind
 {
     SPRITE_ANIMATION_MOVE = 1,
-} sprite_animation_kind;
+};
 
-typedef struct
+struct sprite_animation
 {
     sprite_animation_kind kind;
     union
@@ -30,4 +28,4 @@ typedef struct
             Vector2 target;
         } move;
     } payload;
-} sprite_animation;
+};

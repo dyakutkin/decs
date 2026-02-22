@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef struct
+struct entity
 {
     size_t idx;
     uint32_t revision;
-} entity;
+};

@@ -4,9 +4,9 @@
 
 #include "dynarray.h"
 
-#include "assets/textures.h"
+#include "assets/textures.hpp"
 
-#include "entity.h"
+#include "entity.hpp"
 #include "ivec2.hpp"
 #include "world.h"
 
@@ -15,7 +15,7 @@
 
 #define BG_RENDER_RADIUS_DELTA 25
 
-typedef struct
+struct render_state
 {
     float tile_size_px;
     Camera2D *camera;
@@ -26,9 +26,8 @@ typedef struct
     size_t current_actor_idx;
 
     DYNARRAY(ivec2) visible_tiles;
-} render_state;
 
-render_state *render_state_allocate(textures *t, Camera2D *c);
-void render_state_deallocate(render_state *r);
-void render_state_reinit(render_state *r, world *w, percepted_events *pe,
-                         entity player);
+    static render_state *allocate(::textures *t, Camera2D *c);
+    void deallocate();
+    void reinit(world *w, percepted_events *pe, entity player);
+};

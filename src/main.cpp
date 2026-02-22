@@ -3,19 +3,19 @@
 #include "include/raylib/raylib.h"
 
 #include "board.h"
-#include "entity.h"
+#include "entity.hpp"
 #include "log.h"
 #include "option.h"
 #include "turn.hpp"
 #include "world.h"
 
-#include "setup.h"
+#include "setup.hpp"
 
-#include "assets/textures.h"
+#include "assets/textures.hpp"
 
 #include "systems/board.hpp"
 #include "systems/npc.h"
-#include "systems/render.h"
+#include "systems/render.hpp"
 #include "systems/vision.h"
 
 #define SCREEN_WIDTH 1920
@@ -38,7 +38,7 @@ void run_turn(world *w, board *b, turn *t, entity player, render_state *r)
     stamp = (GetTime() - stamp) * 1000.0;
     printf("Update took %.3f ms\n", stamp);
 
-    render_state_reinit(r, w, COMPONENT(w, player, percepted_events), player);
+    r->reinit(w, COMPONENT(w, player, percepted_events), player);
 }
 
 int main(void)
@@ -51,11 +51,11 @@ int main(void)
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
 
-    textures txtrs = textures_allocate();
+    textures txtrs = textures::load();
 
     Camera2D camera{.rotation = 0.0f, .zoom = .75f};
 
-    render_state *r = render_state_allocate(&txtrs, &camera);
+    render_state *r = render_state::allocate(&txtrs, &camera);
 
     // Initial run.
     run_turn(w, b, t, player, r);
@@ -104,8 +104,8 @@ int main(void)
         EndDrawing();
     } while (!WindowShouldClose());
 
-    render_state_deallocate(r);
-    textures_unload(&txtrs);
+    r->deallocate();
+    txtrs.unload();
 
     world_deallocate(w);
     board_deallocate(b);

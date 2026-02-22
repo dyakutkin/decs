@@ -1,4 +1,4 @@
-#include "setup.h"
+#include "setup.hpp"
 
 static bool place_entity_on_board(entity entity, ivec2 point, world *w,
                                   board *b)

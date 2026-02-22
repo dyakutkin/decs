@@ -1,7 +1,6 @@
-#include "render_state.h"
-#include "ivec2.hpp"
+#include "render_state.hpp"
 
-render_state *render_state_allocate(textures *t, Camera2D *c)
+render_state *render_state::allocate(::textures *t, Camera2D *c)
 {
     render_state *r = (render_state *)calloc(1, sizeof(render_state));
     r->camera = c;
@@ -9,17 +8,16 @@ render_state *render_state_allocate(textures *t, Camera2D *c)
     return r;
 }
 
-void render_state_deallocate(render_state *r)
+void render_state::deallocate()
 {
-    free(r->actors.items);
-    free(r->visible_tiles.items);
-    free(r);
+    free(this->actors.items);
+    free(this->visible_tiles.items);
+    free(this);
 }
 
 static float map_tile_size() { return 128; }
 
-void render_state_reinit(render_state *r, world *w, percepted_events *pe,
-                         entity player)
+void render_state::reinit(world *w, percepted_events *pe, entity player)
 {
     if (!valid_entity(w, player))
     {
@@ -32,24 +30,24 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
     }
     ivec2 player_pos = situation->point;
 
-    r->left_upper = (ivec2){
+    this->left_upper = (ivec2){
         .x = player_pos.x - PLAYER_RENDER_RADIUS,
         .y = player_pos.y - PLAYER_RENDER_RADIUS,
     };
 
-    r->tile_size_px = map_tile_size();
+    this->tile_size_px = map_tile_size();
 
     entity_sprite *es = NULL;
     entity_flags *flags = NULL;
 
-    DYNARRAY_CLEAR(r->actors);
-    r->current_actor_idx = 0;
-    DYNARRAY_CLEAR(r->visible_tiles);
+    DYNARRAY_CLEAR(this->actors);
+    this->current_actor_idx = 0;
+    DYNARRAY_CLEAR(this->visible_tiles);
 
     for (size_t i = 0; i < pe->broadcasts.len; i++)
     {
         event_broadcast eb = pe->broadcasts.items[i];
-        DYNARRAY_APPEND(r->visible_tiles, eb.origin);
+        DYNARRAY_APPEND(this->visible_tiles, eb.origin);
 
         if (!eb.event.set)
         {
@@ -77,17 +75,17 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
             es->type = SPRITE_UNKNOWN;
         }
 
-        es->position = (Vector2){.x = eb.origin.x * r->tile_size_px,
-                                 .y = eb.origin.y * r->tile_size_px};
-        DYNARRAY_APPEND(r->actors, ev.subject.entity);
+        es->position = (Vector2){.x = eb.origin.x * this->tile_size_px,
+                                 .y = eb.origin.y * this->tile_size_px};
+        DYNARRAY_APPEND(this->actors, ev.subject.entity);
 
         switch (ev.kind)
         {
         case EVENT_EXISTS:
             break;
         case EVENT_WALKS:
-            es->position = (Vector2){.x = ev.origin.x * r->tile_size_px,
-                                     .y = ev.origin.y * r->tile_size_px};
+            es->position = (Vector2){.x = ev.origin.x * this->tile_size_px,
+                                     .y = ev.origin.y * this->tile_size_px};
             DYNARRAY_APPEND(
                 es->animations,
                 ((sprite_animation){
@@ -97,14 +95,14 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
                             .target = (Vector2){
                                 .x = (ev.origin.x +
                                       ivec2::from_direction(ev.direction).x) *
-                                     r->tile_size_px,
+                                     this->tile_size_px,
                                 .y = (ev.origin.y +
                                       ivec2::from_direction(ev.direction).y) *
-                                     r->tile_size_px}}}}));
+                                     this->tile_size_px}}}}));
             break;
         case EVENT_BUMPS:
-            es->position = (Vector2){.x = ev.origin.x * r->tile_size_px,
-                                     .y = ev.origin.y * r->tile_size_px};
+            es->position = (Vector2){.x = ev.origin.x * this->tile_size_px,
+                                     .y = ev.origin.y * this->tile_size_px};
             DYNARRAY_APPEND(
                 es->animations,
                 ((sprite_animation){
@@ -114,18 +112,19 @@ void render_state_reinit(render_state *r, world *w, percepted_events *pe,
                             .target = (Vector2){
                                 .x = (ev.origin.x +
                                       ivec2::from_direction(ev.direction).x) *
-                                     r->tile_size_px,
+                                     this->tile_size_px,
                                 .y = (ev.origin.y +
                                       ivec2::from_direction(ev.direction).y) *
-                                     r->tile_size_px}}}}));
+                                     this->tile_size_px}}}}));
             DYNARRAY_APPEND(
                 es->animations,
                 ((sprite_animation){
                     .kind = SPRITE_ANIMATION_MOVE,
                     .payload = {
-                        .move = {.target = (Vector2){
-                                     .x = ev.origin.x * r->tile_size_px,
-                                     .y = ev.origin.y * r->tile_size_px}}}}));
+                        .move = {
+                            .target = (Vector2){
+                                .x = ev.origin.x * this->tile_size_px,
+                                .y = ev.origin.y * this->tile_size_px}}}}));
             break;
         case EVENT_DIES:
         case EVENT_OWNS:

@@ -8,7 +8,7 @@
 #include "dynarray.h"
 #include "ivec2.hpp"
 #include "option.h"
-#include "sprite.h"
+#include "sprite.hpp"
 
 #define ENTITY_NAME_MAX_LENGTH 32
 
